@@ -6,13 +6,13 @@ const session = require('express-session');
 const opn = require('open');
 const app = express();
 
-const PORT = 3000;
+const PORT = 8000;
 
 const refreshTokenStore = {};
 const accessTokenCache = new NodeCache({ deleteOnExpire: true });
 
 if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
-    throw new Error('Missing CLIENT_ID or CLIENT_SECRET environment variable.')
+  throw new Error('Missing CLIENT_ID or CLIENT_SECRET environment variable.');
 }
 
 //===========================================================================//
@@ -23,7 +23,7 @@ if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
 //  installing. If they don't match your app's configuration, users will
 //  see an error page.
 
-// Replace the following with the values from your app auth config, 
+// Replace the following with the values from your app auth config,
 // or set them as environment variables before running.
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -32,7 +32,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 // To request others, set the SCOPE environment variable instead
 let SCOPES = ['crm.objects.contacts.read'];
 if (process.env.SCOPE) {
-    SCOPES = (process.env.SCOPE.split(/ |, ?|%20/)).join(' ');
+  SCOPES = process.env.SCOPE.split(/ |, ?|%20/).join(' ');
 }
 
 // On successful install, users will be redirected to /oauth-callback
@@ -41,12 +41,14 @@ const REDIRECT_URI = `http://localhost:${PORT}/oauth-callback`;
 //===========================================================================//
 
 // Use a session to keep track of client ID
-app.use(session({
-  secret: Math.random().toString(36).substring(2),
-  resave: false,
-  saveUninitialized: true
-}));
- 
+app.use(
+  session({
+    secret: Math.random().toString(36).substring(2),
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
 //================================//
 //   Running the OAuth 2.0 Flow   //
 //================================//
@@ -92,7 +94,7 @@ app.get('/oauth-callback', async (req, res) => {
       client_id: CLIENT_ID,
       client_secret: CLIENT_SECRET,
       redirect_uri: REDIRECT_URI,
-      code: req.query.code
+      code: req.query.code,
     };
 
     // Step 4
@@ -116,7 +118,7 @@ app.get('/oauth-callback', async (req, res) => {
 const exchangeForTokens = async (userId, exchangeProof) => {
   try {
     const responseBody = await request.post('https://api.hubapi.com/oauth/v1/token', {
-      form: exchangeProof
+      form: exchangeProof,
     });
     // Usually, this token data should be persisted in a database and associated with
     // a user identity.
@@ -138,7 +140,7 @@ const refreshAccessToken = async (userId) => {
     client_id: CLIENT_ID,
     client_secret: CLIENT_SECRET,
     redirect_uri: REDIRECT_URI,
-    refresh_token: refreshTokenStore[userId]
+    refresh_token: refreshTokenStore[userId],
   };
   return await exchangeForTokens(userId, refreshTokenProof);
 };
@@ -167,13 +169,18 @@ const getContact = async (accessToken) => {
   try {
     const headers = {
       Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     };
     console.log('===> Replace the following request.get() to test other API calls');
-    console.log('===> request.get(\'https://api.hubapi.com/contacts/v1/lists/all/contacts/all?count=1\')');
-    const result = await request.get('https://api.hubapi.com/contacts/v1/lists/all/contacts/all?count=1', {
-      headers: headers
-    });
+    console.log(
+      "===> request.get('https://api.hubapi.com/contacts/v1/lists/all/contacts/all?count=1')"
+    );
+    const result = await request.get(
+      'https://api.hubapi.com/contacts/v1/lists/all/contacts/all?count=1',
+      {
+        headers: headers,
+      }
+    );
 
     return JSON.parse(result).contacts[0];
   } catch (e) {

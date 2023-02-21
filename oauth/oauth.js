@@ -4,7 +4,7 @@ const request = require('request-promise-native');
 const NodeCache = require('node-cache');
 const app = express();
 const { persistToken, getTokenIfExist } = require('../firebase/firebase');
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 
 const refreshTokenStore = {};
 const accessTokenCache = new NodeCache({ deleteOnExpire: true });
@@ -82,9 +82,7 @@ app.get('/oauth-callback', async (req, res) => {
 
     // Step 4
     // Exchange the authorization code for an access token and refresh token
-    console.log(
-      '===> Step 4: Exchanging authorization code for an access token and refresh token'
-    );
+    console.log('===> Step 4: Exchanging authorization code for an access token and refresh token');
     const token = await exchangeForTokens(req.sessionID, authCodeProof);
     if (token.message) {
       return res.redirect(`/error?msg=${token.message}`);
@@ -102,31 +100,20 @@ app.get('/oauth-callback', async (req, res) => {
 
 const exchangeForTokens = async (userId, exchangeProof) => {
   try {
-    const responseBody = await request.post(
-      'https://api.hubapi.com/oauth/v1/token',
-      {
-        form: exchangeProof,
-      }
-    );
+    const responseBody = await request.post('https://api.hubapi.com/oauth/v1/token', {
+      form: exchangeProof,
+    });
     // Usually, this token data should be persisted in a database and associated with
     // a user identity.
     const tokens = JSON.parse(responseBody);
     refreshTokenStore[userId] = tokens.refresh_token;
-    accessTokenCache.set(
-      userId,
-      tokens.access_token,
-      Math.round(tokens.expires_in * 0.75)
-    );
+    accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));
 
     console.log('       > Received an access token and refresh token');
-    // storeToken(refreshTokenStore[userId]);
     persistToken(refreshTokenStore[userId]);
-    // verifyToken(refreshTokenStore[userId]);
     return tokens.access_token;
   } catch (e) {
-    console.error(
-      `       > Error exchanging ${exchangeProof.grant_type} for access token`
-    );
+    console.error(`       > Error exchanging ${exchangeProof.grant_type} for access token`);
     return JSON.parse(e.response.body);
   }
 };

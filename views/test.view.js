@@ -24,15 +24,13 @@ exports.renderView = async (req, res) => {
   res.setHeader('Content-Type', 'text/html');
   res.write(`<h2>HubSpot OAuth 2.0 PCA Services App</h2>`);
   let authorized = await isAuthorized(req.sessionID);
+  console.log(authorized);
   if (authorized) {
     const accessToken = await getAccessToken(req.sessionID);
     hubspotClient = new hubspot.Client({ accessToken: `${accessToken}` });
     const contact = await resContacts(accessToken);
-    // cron.schedule('*/5 * * * *', () =>
-    // apiQueryAndOperations(hubspotClient, accessToken);
-    // );
     displayContactName(res, contact);
-    recentUpdatedProperties(accessToken);
+    // recentUpdatedProperties(accessToken);
   } else {
     res.write(`<a href="/install"><h3>Install the app</h3></a>`);
   }

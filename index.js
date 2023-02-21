@@ -8,8 +8,8 @@ const app = express();
 const axios = require('axios');
 const cors = require('cors');
 
-const { renderView } = require('./views/test.view');
 const port = process.env.PORT || 8000;
+const { renderView } = require('./views/test.view');
 
 if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
   throw new Error('Missing CLIENT_ID or CLIENT_SECRET environment variable.');
@@ -40,13 +40,3 @@ app.get('/error', (req, res) => {
 app.listen(port, () => console.log(`=== Starting your app on http://localhost:${port} ===`));
 
 opn(`http://localhost:${port}`);
-
-// setInterval(function () {
-//   http.get('https://pca-integration.herokuapp.com/');
-//   console.log('Made an http call');
-// }, 300000); // every 5 minutes (300000)
-
-cron.schedule('*/5 * * * *', async () => {
-  const data = await axios.get('https://pca-services.herokuapp.com/');
-  console.log(data);
-});

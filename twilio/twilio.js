@@ -20,7 +20,9 @@ exports.main = async (event, callback) => {
   // TODO: This would be a good place to use Lookup to verify the phone is a mobile number
   const email = event.body.object.properties.email ? event.body.object.properties.email : '';
   const phone = event.body.object.properties.phone ? event.body.object.properties.phone : '';
-  const mobilePhone = event.inputFields['mobilephone'];
+  const mobilePhone = event.body.object.properties.mobilephone
+    ? event.body.object.properties.mobilephone
+    : '';
   const toPhoneNumber = mobilePhone ? mobilePhone : phone;
 
   // Define the template for the message body. It can include dynamic {{variables}} from fields in Hubspot

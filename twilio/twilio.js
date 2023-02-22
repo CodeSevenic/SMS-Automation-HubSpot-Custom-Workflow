@@ -21,6 +21,10 @@ exports.main = async (event, callback) => {
     : '';
   const toPhoneNumber = mobilePhone ? mobilePhone : phone;
 
+  console.log(
+    `Phone: ${toPhoneNumber} \n fromPhoneNumber: ${fromPhoneNumber} \n AccountSid: ${accountSID} \n AuthToken: ${authToken}`
+  );
+
   // Define the template for the message body. It can include dynamic {{variables}} from fields in Hubspot
   // For each variable, make sure you add the corresponding property to the workflow during setup
   const template = event.body.inputFields.staticInput ? event.body.inputFields.staticInput : '';
@@ -49,10 +53,10 @@ exports.main = async (event, callback) => {
 
   // Send API request to Twilio via Axios
   const response = await axios.post(url, params, config);
-  callback({
-    outputFields: {
-      MessageSid: response.data.sid,
-      MessageStatus: response.data.status,
-    },
-  });
+  // callback({
+  //   outputFields: {
+  //     MessageSid: response.data.sid,
+  //     MessageStatus: response.data.status,
+  //   },
+  // });
 };

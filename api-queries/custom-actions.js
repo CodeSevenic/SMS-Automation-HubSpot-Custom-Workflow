@@ -71,7 +71,7 @@ const data = {
         // objectInput: 'Object Property Input',
         // optionsInput: 'External Options Input',
       },
-      actionName: 'SMS Notifications',
+      actionName: 'SMS Notifications II',
       actionDescription: 'Send SMS notifications to HubSpot contacts',
       appDisplayName: 'MO SMS Automation',
       actionCardContent: 'MO SMS notifications',

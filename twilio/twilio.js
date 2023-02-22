@@ -3,6 +3,7 @@
 const axios = require('axios');
 
 exports.main = async (event, callback) => {
+  console.log('Hello World Function just ran 😁');
   // Load environment variables that are stored as Secrets in Hubspot
   // These are required for the Twilio API
   const accountSID = process.env.AccountSID;

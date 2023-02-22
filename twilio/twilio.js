@@ -1,4 +1,5 @@
-﻿// Load the axios library for sending HTTP request to the Twilio API
+﻿require('dotenv').config();
+// Load the axios library for sending HTTP request to the Twilio API
 const axios = require('axios');
 
 exports.main = async (event, callback) => {

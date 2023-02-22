@@ -2,73 +2,59 @@
 const axios = require('axios');
 
 exports.main = async (event, callback) => {
-  console.log('PROP: ', event.object.properties.firstname);
-  console.log('PROP: ', event.object.properties.phone);
-  console.log('PROP: ', event.object.properties.email);
-  console.log('Message: ', event.inputFields.staticInput);
+  console.log('PROP: ', event.body.object.properties.firstname);
+  console.log('PROP: ');
+  console.log('PROP: ');
+  console.log('Message: ', event.body.inputFields.staticInput);
 
-  const obj = {
-    callbackId: 'ap-2896934-490636100887-7-0',
-    origin: {
-      portalId: 2896934,
-      actionDefinitionId: 31040352,
-      actionDefinitionVersion: 1,
-      extensionDefinitionId: 31040352,
-      extensionDefinitionVersionId: 1,
-    },
-    context: {
-      source: 'WORKFLOWS',
-      workflowId: 332765965,
-    },
-    object: {
-      objectId: 133801,
-      propertyValues: {
-        firstname: {
-          name: 'firstname',
-          value: 'Sibusiso',
-          timestamp: 1676834955766,
-          sourceId: 'userId:48179127',
-          source: 'CRM_UI',
-          sourceVid: [],
-          requestId: 'cf4f78d9-a85d-4bee-8a09-a91f7d78e631',
-          updatedByUserId: 48179127,
-          useTimestampAsPersistenceTimestamp: true,
-        },
-        phone: {
-          name: 'phone',
-          value: '+27835014072',
-          timestamp: 1676834955766,
-          sourceId: 'userId:48179127',
-          source: 'CRM_UI',
-          sourceVid: [],
-          requestId: 'cf4f78d9-a85d-4bee-8a09-a91f7d78e631',
-          updatedByUserId: 48179127,
-          useTimestampAsPersistenceTimestamp: true,
-        },
-        email: {
-          name: 'email',
-          value: 'sibusiso@mo.agency',
-          timestamp: 1676834955835,
-          sourceId: 'userId:48179127',
-          source: 'CRM_UI',
-          sourceVid: [],
-          requestId: 'cf4f78d9-a85d-4bee-8a09-a91f7d78e631',
-          updatedByUserId: 48179127,
-          useTimestampAsPersistenceTimestamp: true,
-        },
-      },
-      properties: {
-        firstname: 'Sibusiso',
-        phone: '+27835014072',
-        email: 'sibusiso@mo.agency',
-      },
-      objectType: 'CONTACT',
-    },
-    fields: {
-      staticInput: 'Hello World Sibusiso',
-    },
-    inputFields: {
-      staticInput: 'Hello World Sibusiso',
+  const workflowMessage = event.body.inputFields.staticInput;
+
+  // Load environment variables that are stored as Secrets in Hubspot
+  // These are required for the Twilio API
+  const accountSID = process.env.AccountSID;
+  const authToken = process.env.AuthToken;
+  const fromPhoneNumber = process.env.TwilioSenderID;
+
+  // Evaluate the contact's mobilePhone and phone fields to determine the toPhoneNumber
+  // Use the mobilePhone if it exists, otherwise use phone
+  // TODO: This would be a good place to use Lookup to verify the phone is a mobile number
+  const email = event.body.object.properties.email ? event.body.object.properties.email : '';
+  const phone = event.body.object.properties.phone ? event.body.object.properties.phone : '';
+  const mobilePhone = event.inputFields['mobilephone'];
+  const toPhoneNumber = mobilePhone ? mobilePhone : phone;
+
+  // Define the template for the message body. It can include dynamic {{variables}} from fields in Hubspot
+  // For each variable, make sure you add the corresponding property to the workflow during setup
+  const template =
+    'Hi {{firstname}}. This is a Twilio SMS message sent from a Hubspot Automation Workflow.';
+  // const template =
+  //   'Hi {{firstname}}. This is a Twilio SMS message sent from a Hubspot Automation Workflow.';
+
+  // Create message body by replacing the template {{variables}} with the input fields of the same key
+  const inputFields = event.inputFields;
+  const body = template.replace(/{{([^}]+)}}/g, (match, key) => {
+    return inputFields[key];
+  });
+
+  // Define the axios url, params and config headers
+  const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSID}/Messages.json`;
+  const params = new URLSearchParams();
+  params.append('From', fromPhoneNumber);
+  params.append('To', toPhoneNumber);
+  params.append('Body', body);
+  const config = {
+    headers: {
+      Authorization: 'Basic ' + Buffer.from(`${accountSID}:${authToken}`).toString('base64'),
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
   };
+
+  // Send API request to Twilio via Axios
+  const response = await axios.post(url, params, config);
+  callback({
+    outputFields: {
+      MessageSid: response.data.sid,
+      MessageStatus: response.data.status,
+    },
+  });
 };

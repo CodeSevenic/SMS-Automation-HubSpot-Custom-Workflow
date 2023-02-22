@@ -60,5 +60,5 @@ exports.main = async (event, callback) => {
   //     MessageStatus: response.data.status,
   //   },
   // });
-  // console.log(response);
+  console.log(response);
 };

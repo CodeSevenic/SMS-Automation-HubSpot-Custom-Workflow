@@ -2,12 +2,7 @@
 const axios = require('axios');
 
 exports.main = async (event, callback) => {
-  console.log('PROP: ', event.body.object.properties.firstname);
   console.log('PROP: ');
-  console.log('PROP: ');
-  console.log('Message: ', event.body.inputFields.staticInput);
-
-  const workflowMessage = event.body.inputFields.staticInput;
 
   // Load environment variables that are stored as Secrets in Hubspot
   // These are required for the Twilio API
@@ -18,6 +13,7 @@ exports.main = async (event, callback) => {
   // Evaluate the contact's mobilePhone and phone fields to determine the toPhoneNumber
   // Use the mobilePhone if it exists, otherwise use phone
   // TODO: This would be a good place to use Lookup to verify the phone is a mobile number
+  const name = event.body.object.properties.firstname ? event.body.object.properties.firstname : '';
   const email = event.body.object.properties.email ? event.body.object.properties.email : '';
   const phone = event.body.object.properties.phone ? event.body.object.properties.phone : '';
   const mobilePhone = event.body.object.properties.mobilephone
@@ -27,8 +23,8 @@ exports.main = async (event, callback) => {
 
   // Define the template for the message body. It can include dynamic {{variables}} from fields in Hubspot
   // For each variable, make sure you add the corresponding property to the workflow during setup
-  const template =
-    'Hi {{firstname}}. This is a Twilio SMS message sent from a Hubspot Automation Workflow.';
+  const template = event.body.inputFields.staticInput ? event.body.inputFields.staticInput : '';
+
   // const template =
   //   'Hi {{firstname}}. This is a Twilio SMS message sent from a Hubspot Automation Workflow.';
 

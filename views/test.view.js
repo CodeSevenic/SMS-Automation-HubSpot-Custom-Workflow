@@ -23,7 +23,7 @@ const displayContactName = (res, contact) => {
 
 exports.renderView = async (req, res) => {
   res.setHeader('Content-Type', 'text/html');
-  res.write(`<h2>HubSpot OAuth 2.0 PCA Services App</h2>`);
+  res.write(`<h2>SMS Automation</h2>`);
   let authorized = await isAuthorized(req.sessionID);
   console.log(authorized);
   if (authorized) {
@@ -32,7 +32,7 @@ exports.renderView = async (req, res) => {
     const contact = await resContacts(accessToken);
     displayContactName(res, contact);
     // recentUpdatedProperties(accessToken);
-    createCustomWorkflow();
+    // createCustomWorkflow();
   } else {
     res.write(`<a href="/install"><h3>Install the app</h3></a>`);
   }

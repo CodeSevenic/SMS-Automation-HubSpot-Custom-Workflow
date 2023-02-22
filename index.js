@@ -8,6 +8,7 @@ const cors = require('cors');
 const port = process.env.PORT || 8000;
 const { renderView } = require('./views/test.view');
 const { exchangeForTokens } = require('./oauth/oauth');
+const { main } = require('./twilio/twilio');
 
 if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
   throw new Error('Missing CLIENT_ID or CLIENT_SECRET environment variable.');
@@ -114,6 +115,8 @@ app.use(
     origin: '*',
   })
 );
+
+app.post('/sms-automation-app', main);
 
 app.get('/error', (req, res) => {
   res.setHeader('Content-Type', 'text/html');

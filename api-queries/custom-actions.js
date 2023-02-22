@@ -12,7 +12,7 @@ const url = `https://api.hubspot.com/automation/v4/actions/${appId}?hapikey=${de
 
 const data = {
   appId,
-  actionUrl: 'https://webhook.site/a1d9da02-7f16-4e36-a170-674eac9c650c',
+  actionUrl: 'https://f116-41-116-7-86.eu.ngrok.io/sms-automation-app',
   published: true,
   objectTypes: ['CONTACT'],
   inputFields: [

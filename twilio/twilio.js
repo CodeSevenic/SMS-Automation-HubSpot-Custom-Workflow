@@ -53,10 +53,12 @@ exports.main = async (event, callback) => {
 
   // Send API request to Twilio via Axios
   const response = await axios.post(url, params, config);
+  res.status(200).send();
   // callback({
   //   outputFields: {
   //     MessageSid: response.data.sid,
   //     MessageStatus: response.data.status,
   //   },
   // });
+  console.log(response);
 };

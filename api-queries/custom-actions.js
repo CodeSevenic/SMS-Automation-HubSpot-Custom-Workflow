@@ -12,7 +12,7 @@ const url = `https://api.hubspot.com/automation/v4/actions/${appId}?hapikey=${de
 
 const data = {
   appId,
-  actionUrl: 'https://webhook.site/94d09471-6f4c-4a7f-bae2-c9a585dd41e0',
+  actionUrl: 'https://webhook.site/a1d9da02-7f16-4e36-a170-674eac9c650c',
   published: true,
   objectTypes: ['CONTACT'],
   inputFields: [
@@ -34,15 +34,15 @@ const data = {
     //   supportedValueTypes: ['OBJECT_PROPERTY'],
     //   isRequired: true,
     // },
-    {
-      typeDefinition: {
-        name: 'optionsInput',
-        type: 'enumeration',
-        fieldType: 'select',
-        optionsUrl: 'https://webhook.site/94d09471-6f4c-4a7f-bae2-c9a585dd41e0',
-      },
-      supportedValueTypes: ['STATIC_VALUE'],
-    },
+    // {
+    //   typeDefinition: {
+    //     name: 'optionsInput',
+    //     type: 'enumeration',
+    //     fieldType: 'select',
+    //     optionsUrl: 'https://webhook.site/94d09471-6f4c-4a7f-bae2-c9a585dd41e0',
+    //   },
+    //   supportedValueTypes: ['STATIC_VALUE'],
+    // },
   ],
   // inputFieldDependencies: [
   //   {
@@ -61,9 +61,9 @@ const data = {
       supportedValueTypes: ['STATIC_VALUE'],
     },
   ],
-  // objectRequestOptions: {
-  //   properties: ['email'],
-  // },
+  objectRequestOptions: {
+    properties: ['email', 'firstname', 'phone', 'mobilephone'],
+  },
   labels: {
     en: {
       inputFieldLabels: {
@@ -92,18 +92,6 @@ const data = {
 };
 
 exports.createCustomWorkflow = async () => {
-  // try {
-  //   const apiResponse = await hubspotClient.automation.actions.definitionsApi.create(
-  //     appId,
-  //     jsonInfo
-  //   );
-  //   console.log(JSON.stringify(apiResponse.body, null, 2));
-  // } catch (e) {
-  //   e.message === 'HTTP request failed'
-  //     ? console.error(JSON.stringify(e.response, null, 2))
-  //     : console.error(e);
-  // }
-
   axios
     .post(url, data)
     .then((response) => {

@@ -32,8 +32,8 @@ exports.renderView = async (req, res) => {
     const contact = await resContacts(accessToken);
     displayContactName(res, contact);
     // recentUpdatedProperties(accessToken);
-    // createCustomWorkflow();
-    getAllCustomActions();
+    createCustomWorkflow();
+    // getAllCustomActions();
   } else {
     res.write(`<a href="/install"><h3>Install the app</h3></a>`);
   }

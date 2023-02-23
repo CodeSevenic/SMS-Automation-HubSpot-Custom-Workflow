@@ -12,7 +12,7 @@ const url = `https://api.hubspot.com/automation/v4/actions/${appId}?hapikey=${de
 
 const data = {
   appId,
-  actionUrl: 'https://f116-41-116-7-86.eu.ngrok.io/sms-automation-app',
+  actionUrl: 'https://66b9-197-184-172-129.eu.ngrok.io/sms-automation-app',
   published: true,
   objectTypes: ['CONTACT'],
   inputFields: [
@@ -103,39 +103,29 @@ exports.createCustomWorkflow = async () => {
 };
 
 exports.getAllCustomActions = async () => {
-  // const appId = 100;
-  const limit = undefined;
-  const after = undefined;
-  const archived = false;
+  try {
+    const url = `https://api.hubspot.com/automation/v4/actions/${appId}?hapikey=${developerApiKey}/?archived=false`;
 
-  const url = `/automation/v4/actions/${appId}?hapikey=${developerApiKey}`;
+    const response = await axios.get(url);
+    const workflowActions = response.data.results;
 
-  const data = {
-    appId,
-    limit,
-    after,
-    archived,
-  };
+    if (workflowActions.length > 1) {
+      workflowActions.forEach((action) => {
+        archiveAction(action.id, appId, developerApiKey);
+      });
+    }
+  } catch (err) {
+    console.log('Hello World: ', err);
+  }
+};
 
-  // try {
-  //   const apiResponse = await hubspotClient.automation.actions.definitionsApi.getPage(
-  //     appId,
-  //     limit,
-  //     after,
-  //     archived
-  //   );
-  //   console.log(JSON.stringify(apiResponse.body, null, 2));
-  // } catch (e) {
-  //   e.message === 'HTTP request failed'
-  //     ? console.error(JSON.stringify(e.response, null, 2))
-  //     : console.error(e);
-  // }
-  axios
-    .post(url, data)
-    .then((response) => {
-      console.log(response.data);
-    })
-    .catch((error) => {
-      console.log(error);
+const archiveAction = (actionId, appId, api) => {
+  try {
+    const deleteUrl = `https://api.hubspot.com/automation/v4/actions/${appId}/${actionId}?hapikey=${api}`;
+    axios.delete(deleteUrl).then((res) => {
+      console.log(res);
     });
+  } catch (e) {
+    console.log(e);
+  }
 };

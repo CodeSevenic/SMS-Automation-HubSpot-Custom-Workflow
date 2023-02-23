@@ -109,11 +109,13 @@ exports.getAllCustomActions = async () => {
     const response = await axios.get(url);
     const workflowActions = response.data.results;
 
-    if (workflowActions.length > 1) {
-      workflowActions.forEach((action) => {
-        archiveAction(action.id, appId, developerApiKey);
-      });
-    }
+    console.log(workflowActions);
+
+    // if (workflowActions.length > 1) {
+    //   workflowActions.forEach((action) => {
+    //     archiveAction(action.id, appId, developerApiKey);
+    //   });
+    // }
   } catch (err) {
     console.log('Hello World: ', err);
   }

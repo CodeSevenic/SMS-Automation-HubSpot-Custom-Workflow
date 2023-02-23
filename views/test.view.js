@@ -11,9 +11,9 @@ const {
 } = require('../api-queries/huspots-queries');
 const { isAuthorized, getAccessToken } = require('../oauth/oauth');
 
-//======================================================//
-//   Displaying test information info to the browser   //
-//======================================================//
+//=======================================================//
+//   Displaying test information info to the browser     //
+//=======================================================//
 
 const displayContactName = (res, contact) => {
   for (val of contact) {

@@ -108,17 +108,34 @@ exports.getAllCustomActions = async () => {
   const after = undefined;
   const archived = false;
 
-  try {
-    const apiResponse = await hubspotClient.automation.actions.definitionsApi.getPage(
-      appId,
-      limit,
-      after,
-      archived
-    );
-    console.log(JSON.stringify(apiResponse.body, null, 2));
-  } catch (e) {
-    e.message === 'HTTP request failed'
-      ? console.error(JSON.stringify(e.response, null, 2))
-      : console.error(e);
-  }
+  const url = `/automation/v4/actions/${appId}?hapikey=${developerApiKey}`;
+
+  const data = {
+    appId,
+    limit,
+    after,
+    archived,
+  };
+
+  // try {
+  //   const apiResponse = await hubspotClient.automation.actions.definitionsApi.getPage(
+  //     appId,
+  //     limit,
+  //     after,
+  //     archived
+  //   );
+  //   console.log(JSON.stringify(apiResponse.body, null, 2));
+  // } catch (e) {
+  //   e.message === 'HTTP request failed'
+  //     ? console.error(JSON.stringify(e.response, null, 2))
+  //     : console.error(e);
+  // }
+  axios
+    .post(url, data)
+    .then((response) => {
+      console.log(response.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };

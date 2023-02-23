@@ -118,6 +118,7 @@ app.use(
   })
 );
 
+// Twilio message sender when receiving webhook from the HubSpot Custom Action
 app.post('/sms-automation-app', main);
 
 app.get('/error', (req, res) => {

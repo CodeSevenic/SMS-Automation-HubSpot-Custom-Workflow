@@ -3,7 +3,7 @@ const request = require('request-promise-native');
 const NodeCache = require('node-cache');
 const { persistToken, getTokenIfExist } = require('../firebase/firebase');
 
-const refreshTokenStore = {};
+let refreshTokenStore = {};
 const accessTokenCache = new NodeCache({ deleteOnExpire: true });
 
 const port = process.env.PORT || 8000;
@@ -27,6 +27,58 @@ const REDIRECT_URI = `http://localhost:${port}/oauth-callback`;
 //   Exchanging Proof for an Access Token   //
 //==========================================//
 
+// exports.exchangeForTokens = async (userId, exchangeProof) => {
+//   try {
+//     const responseBody = await request.post('https://api.hubapi.com/oauth/v1/token', {
+//       form: exchangeProof,
+//     });
+//     // Usually, this token data should be persisted in a database and associated with
+//     // a user identity.
+//     const tokens = JSON.parse(responseBody);
+//     refreshTokenStore[userId] = tokens.refresh_token;
+//     accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));
+
+//     console.log('       > Received an access token and refresh token');
+//     persistToken(refreshTokenStore[userId]);
+//     return tokens.access_token;
+//   } catch (e) {
+//     console.error(`       > Error exchanging ${exchangeProof.grant_type} for access token`);
+//     return JSON.parse(e.response.body);
+//   }
+// };
+
+// const refreshAccessToken = async (userId) => {
+//   const refreshTokenProof = {
+//     grant_type: 'refresh_token',
+//     client_id: CLIENT_ID,
+//     client_secret: CLIENT_SECRET,
+//     redirect_uri: REDIRECT_URI,
+//     refresh_token: refreshTokenStore[userId] || (await getTokenIfExist()),
+//   };
+
+//   return await this.exchangeForTokens(userId, refreshTokenProof);
+// };
+
+// exports.getAccessToken = async (userId) => {
+//   // If the access token has expired, retrieve
+//   // a new one using the refresh token
+//   if (!accessTokenCache.get(userId)) {
+//     console.log('Refreshing expired access token');
+//     await refreshAccessToken(userId);
+//   }
+//   return accessTokenCache.get(userId);
+// };
+
+// exports.isAuthorized = async (userId) => {
+//   let refreshToken = await getTokenIfExist();
+//   console.log('isAuthorized refreshToken : ', refreshToken);
+//   // return refreshTokenStore[userId] ? true : false;
+//   return refreshToken ? true : false;
+// };
+
+//==========================================//
+//   Exchanging Proof for an Access Token   //
+//==========================================//
 exports.exchangeForTokens = async (userId, exchangeProof) => {
   try {
     const responseBody = await request.post('https://api.hubapi.com/oauth/v1/token', {
@@ -39,7 +91,6 @@ exports.exchangeForTokens = async (userId, exchangeProof) => {
     accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));
 
     console.log('       > Received an access token and refresh token');
-    persistToken(refreshTokenStore[userId]);
     return tokens.access_token;
   } catch (e) {
     console.error(`       > Error exchanging ${exchangeProof.grant_type} for access token`);
@@ -47,15 +98,15 @@ exports.exchangeForTokens = async (userId, exchangeProof) => {
   }
 };
 
-const refreshAccessToken = async (userId) => {
+exports.refreshAccessToken = async (userId) => {
   const refreshTokenProof = {
     grant_type: 'refresh_token',
     client_id: CLIENT_ID,
     client_secret: CLIENT_SECRET,
     redirect_uri: REDIRECT_URI,
-    refresh_token: refreshTokenStore[userId] || (await getTokenIfExist()),
+    refresh_token: refreshTokenStore[userId],
   };
-  return await this.exchangeForTokens(userId, refreshTokenProof);
+  return await exchangeForTokens(userId, refreshTokenProof);
 };
 
 exports.getAccessToken = async (userId) => {
@@ -68,9 +119,10 @@ exports.getAccessToken = async (userId) => {
   return accessTokenCache.get(userId);
 };
 
-exports.isAuthorized = async (userId) => {
-  let refreshToken = await getTokenIfExist();
-  console.log('isAuthorized refreshToken : ', refreshToken);
-  // return refreshTokenStore[userId] ? true : false;
-  return refreshToken ? true : false;
+exports.isAuthorized = (userId) => {
+  return refreshTokenStore[userId] ? true : false;
 };
+
+if (this.isAuthorized) {
+  refreshTokenStore = {};
+}

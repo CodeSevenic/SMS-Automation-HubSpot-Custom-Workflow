@@ -101,3 +101,24 @@ exports.createCustomWorkflow = async () => {
       console.log(error);
     });
 };
+
+exports.getAllCustomActions = async () => {
+  // const appId = 100;
+  const limit = undefined;
+  const after = undefined;
+  const archived = false;
+
+  try {
+    const apiResponse = await hubspotClient.automation.actions.definitionsApi.getPage(
+      appId,
+      limit,
+      after,
+      archived
+    );
+    console.log(JSON.stringify(apiResponse.body, null, 2));
+  } catch (e) {
+    e.message === 'HTTP request failed'
+      ? console.error(JSON.stringify(e.response, null, 2))
+      : console.error(e);
+  }
+};

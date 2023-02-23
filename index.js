@@ -110,47 +110,47 @@ app.get('/oauth-callback', async (req, res) => {
   }
 });
 
-// Mock user data
-const users = [
-  { username: 'user1', password: 'password1' },
-  { username: 'user2', password: 'password2' },
-  { username: 'user3', password: 'password3' },
-];
+// // Mock user data
+// const users = [
+//   { username: 'user1', password: 'password1' },
+//   { username: 'user2', password: 'password2' },
+//   { username: 'user3', password: 'password3' },
+// ];
 
-// Login page
-app.get('/', (req, res) => {
-  res.send(`
-    <html>
-      <body>
-        <form method="POST" action="/login">
-          <label for="username">Username:</label>
-          <input type="text" id="username" name="username"><br>
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password"><br>
-          <button type="submit">Login</button>
-        </form>
-      </body>
-    </html>
-  `);
-});
+// // Login page
+// app.get('/', (req, res) => {
+//   res.send(`
+//     <html>
+//       <body>
+//         <form method="POST" action="/login">
+//           <label for="username">Username:</label>
+//           <input type="text" id="username" name="username"><br>
+//           <label for="password">Password:</label>
+//           <input type="password" id="password" name="password"><br>
+//           <button type="submit">Login</button>
+//         </form>
+//       </body>
+//     </html>
+//   `);
+// });
 
-// Login logic
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
+// // Login logic
+// app.post('/login', (req, res) => {
+//   const { username, password } = req.body;
 
-  // Find user by username and password
-  const user = users.find((u) => u.username === username && u.password === password);
+//   // Find user by username and password
+//   const user = users.find((u) => u.username === username && u.password === password);
 
-  if (user) {
-    // Successful login
-    res.send('Welcome ' + username + '!');
-  } else {
-    // Invalid login
-    res.status(401).send('Invalid username or password');
-  }
-});
+//   if (user) {
+//     // Successful login
+//     res.send('Welcome ' + username + '!');
+//   } else {
+//     // Invalid login
+//     res.status(401).send('Invalid username or password');
+//   }
+// });
 
-app.get('/view', renderView);
+app.get('/', renderView);
 
 app.use(
   cors({

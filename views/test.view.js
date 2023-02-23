@@ -3,7 +3,7 @@ const cron = require('node-cron');
 let hubspotClient;
 
 const util = require('util');
-const { createCustomWorkflow } = require('../api-queries/custom-actions');
+const { createCustomWorkflow, getAllCustomActions } = require('../api-queries/custom-actions');
 const {
   resContacts,
   apiQueryAndOperations,
@@ -33,6 +33,7 @@ exports.renderView = async (req, res) => {
     displayContactName(res, contact);
     // recentUpdatedProperties(accessToken);
     // createCustomWorkflow();
+    getAllCustomActions();
   } else {
     res.write(`<a href="/install"><h3>Install the app</h3></a>`);
   }

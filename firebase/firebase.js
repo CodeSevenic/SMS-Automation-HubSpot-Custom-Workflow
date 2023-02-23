@@ -24,28 +24,44 @@ const firebaseConfig = {
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
 
+// Store user
+exports.persistUser = async (username, password, token) => {
+  try {
+    await setDoc(doc(db, 'users', 'tokens'), {
+      token,
+      username,
+      password,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 // Store refreshToken
 exports.persistToken = async (token) => {
   try {
-    let isExist = false;
-    const q = query(collection(db, 'users'), where('token', '==', token));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      if (doc.exists(token)) {
-        const obj = doc.data();
-        isExist = true;
-      }
-    });
-
-    if (isExist) {
-      return;
-    }
-
     await setDoc(doc(db, 'users', 'tokens'), {
       token,
     });
   } catch (e) {
     console.log(e);
+  }
+};
+
+// if user exist return
+exports.userExist = async () => {
+  let isExist = false;
+  const q = query(collection(db, 'users'), where('token', '==', token));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    if (doc.exists(token)) {
+      const obj = doc.data();
+      isExist = true;
+    }
+  });
+
+  if (isExist) {
+    return;
   }
 };
 
@@ -61,6 +77,5 @@ exports.getTokenIfExist = async () => {
   } else {
     console.log('No such document!');
   }
-
   return refreshToken;
 };

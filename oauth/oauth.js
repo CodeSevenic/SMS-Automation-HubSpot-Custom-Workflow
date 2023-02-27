@@ -27,7 +27,7 @@ const REDIRECT_URI = `http://localhost:${port}/oauth-callback`;
 //   Exchanging Proof for an Access Token   //
 //==========================================//
 
-exports.exchangeForTokens = async (userId, exchangeProof) => {
+exports.exchangeForTokens = async (userId, exchangeProof, user) => {
   try {
     const responseBody = await request.post('https://api.hubapi.com/oauth/v1/token', {
       form: exchangeProof,
@@ -39,7 +39,9 @@ exports.exchangeForTokens = async (userId, exchangeProof) => {
     accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));
 
     console.log('       > Received an access token and refresh token');
-    persistToken(refreshTokenStore[userId]);
+    // persistToken(refreshTokenStore[userId]);
+    // store user with token to database
+    addUserToBD(user, refreshTokenStore[userId]);
     return tokens.access_token;
   } catch (e) {
     console.error(`       > Error exchanging ${exchangeProof.grant_type} for access token`);
@@ -47,7 +49,7 @@ exports.exchangeForTokens = async (userId, exchangeProof) => {
   }
 };
 
-const refreshAccessToken = async (userId) => {
+const refreshAccessToken = async (userId, user) => {
   const refreshTokenProof = {
     grant_type: 'refresh_token',
     client_id: CLIENT_ID,
@@ -56,15 +58,16 @@ const refreshAccessToken = async (userId) => {
     refresh_token: refreshTokenStore[userId] || (await getTokenIfExist()),
   };
 
-  return await this.exchangeForTokens(userId, refreshTokenProof);
+  return await this.exchangeForTokens(userId, refreshTokenProof, user);
 };
 
-exports.getAccessToken = async (userId) => {
+exports.getAccessToken = async (userId, user) => {
+  console.log('Does it get here? ', user);
   // If the access token has expired, retrieve
   // a new one using the refresh token
   if (!accessTokenCache.get(userId)) {
     console.log('Refreshing expired access token');
-    await refreshAccessToken(userId);
+    await refreshAccessToken(userId, user);
   }
   return accessTokenCache.get(userId);
 };

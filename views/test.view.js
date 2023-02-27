@@ -9,6 +9,7 @@ const {
   apiQueryAndOperations,
   recentUpdatedProperties,
 } = require('../api-queries/huspots-queries');
+const { userExist } = require('../firebase/firebase');
 const { isAuthorized, getAccessToken } = require('../oauth/oauth');
 
 //=======================================================//
@@ -57,6 +58,10 @@ exports.login = (req, res) => {
   //   // Invalid login
   //   res.status(401).send('Invalid username or password');
   // }
+  if (username && password) {
+    res.redirect('/view');
+  }
+
   res.status(200).send();
 };
 
@@ -66,7 +71,8 @@ exports.renderView = async (req, res) => {
   let authorized = await isAuthorized(req.sessionID);
   console.log(authorized);
   if (authorized) {
-    const accessToken = await getAccessToken(req.sessionID);
+    console.log('Other hello: ', userData);
+    const accessToken = await getAccessToken(req.sessionID, userData);
     hubspotClient = new hubspot.Client({ accessToken: `${accessToken}` });
     const contact = await resContacts(accessToken);
     displayContactName(res, contact);

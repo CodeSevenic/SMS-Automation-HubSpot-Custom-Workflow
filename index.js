@@ -118,7 +118,7 @@ app.get('/', loginPage);
 // // Login logic
 app.post('/login', login);
 
-app.get('/rwrwrwrwr', renderView);
+app.get('/view', renderView);
 
 app.use(
   cors({

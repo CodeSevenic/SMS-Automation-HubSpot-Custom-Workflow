@@ -8,6 +8,7 @@ const {
   setDoc,
   where,
   query,
+  addDoc,
 } = require('firebase/firestore/lite');
 
 // =========== CODE TO STORE THE USER ACCESS IN FIREBASE ========== //
@@ -25,10 +26,12 @@ const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
 
 // Store user to database
-exports.addUserToBD = async (user, token) => {
+exports.addUserToBD = async ({ username, password }, token) => {
+  console.log('Hello: ', user);
   try {
-    const docRef = await addDoc(collection(db, 'users'), {
-      user,
+    const docRef = await addDoc(collection(db, 'clients'), {
+      username,
+      password,
       token,
     });
     console.log('Document written with ID: ', docRef.id);

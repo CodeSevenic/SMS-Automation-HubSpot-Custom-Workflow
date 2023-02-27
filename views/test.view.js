@@ -21,6 +21,22 @@ const displayContactName = (res, contact) => {
   }
 };
 
+exports.loginPage = (req, res) => {
+  res.send(/*template*/ `
+      <html>
+        <body>
+          <form method="POST" action="/login">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username"><br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password"><br>
+            <button type="submit">Login</button>
+          </form>
+        </body>
+      </html>
+    `);
+};
+
 exports.loginUser = async (req, res) => {};
 
 exports.renderView = async (req, res) => {

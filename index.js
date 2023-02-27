@@ -14,7 +14,9 @@ if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
   throw new Error('Missing CLIENT_ID or CLIENT_SECRET environment variable.');
 }
 
-app.use(express.json());
+// app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // Use a session to keep track of client ID
 app.use(
@@ -116,7 +118,7 @@ app.get('/', loginPage);
 // // Login logic
 app.post('/login', login);
 
-app.get('/', renderView);
+app.get('/rwrwrwrwr', renderView);
 
 app.use(
   cors({

@@ -37,8 +37,6 @@ exports.loginPage = (req, res) => {
     </body>
   </html>
   `);
-
-  console.log(userData);
 };
 
 exports.login = (req, res) => {
@@ -48,6 +46,7 @@ exports.login = (req, res) => {
     password: password,
   };
 
+  console.log(userData);
   // Find user by username and password
   // const user = users.find((u) => u.username === username && u.password === password);
 
@@ -58,11 +57,8 @@ exports.login = (req, res) => {
   //   // Invalid login
   //   res.status(401).send('Invalid username or password');
   // }
-
-  console.log(userData);
+  res.status(200).send();
 };
-
-exports.loginUser = async (req, res) => {};
 
 exports.renderView = async (req, res) => {
   res.setHeader('Content-Type', 'text/html');

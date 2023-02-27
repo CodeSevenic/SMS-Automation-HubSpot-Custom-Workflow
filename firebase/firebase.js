@@ -27,9 +27,9 @@ const db = getFirestore(appFirebase);
 
 // Store user to database
 exports.addUserToBD = async ({ username, password }, token) => {
-  console.log('Hello: ', user);
+  console.log('Hello: ', username, password);
   try {
-    const docRef = await addDoc(collection(db, 'clients'), {
+    const docRef = await addDoc(collection(db, 'users'), {
       username,
       password,
       token,

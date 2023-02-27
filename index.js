@@ -6,7 +6,7 @@ const app = express();
 const cors = require('cors');
 
 const port = process.env.PORT || 8000;
-const { renderView } = require('./views/test.view');
+const { renderView, loginPage, login } = require('./views/test.view');
 const { exchangeForTokens } = require('./oauth/oauth');
 const { main } = require('./twilio/twilio');
 
@@ -117,24 +117,11 @@ app.get('/oauth-callback', async (req, res) => {
 //   { username: 'user3', password: 'password3' },
 // ];
 
-// // Login page
-// app.get('/', loginPage);
+// Login page
+app.get('/', loginPage);
 
 // // Login logic
-// app.post('/login', (req, res) => {
-//   const { username, password } = req.body;
-
-//   // Find user by username and password
-//   const user = users.find((u) => u.username === username && u.password === password);
-
-//   if (user) {
-//     // Successful login
-//     res.send('Welcome ' + username + '!');
-//   } else {
-//     // Invalid login
-//     res.status(401).send('Invalid username or password');
-//   }
-// });
+app.post('/login', login);
 
 app.get('/', renderView);
 

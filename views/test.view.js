@@ -24,22 +24,40 @@ const displayContactName = (res, contact) => {
 let userData;
 
 exports.loginPage = (req, res) => {
-  userData = req.body;
   res.send(/*template*/ `
-      <html>
-        <body>
-          <form method="POST" action="/login">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username"><br>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password"><br>
-            <button type="submit">Login</button>
-          </form>
-        </body>
-      </html>
-    `);
+  <html>
+    <body>
+      <form method="POST" action="/login">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username"><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password"><br>
+        <button type="submit">Login</button>
+      </form>
+    </body>
+  </html>
+  `);
 
   console.log(userData);
+};
+
+exports.login = (req, res) => {
+  const { username, password } = req.body;
+  userData = {
+    username: username,
+    password: password,
+  };
+
+  // Find user by username and password
+  const user = users.find((u) => u.username === username && u.password === password);
+
+  if (user) {
+    // Successful login
+    res.send('Welcome ' + username + '!');
+  } else {
+    // Invalid login
+    res.status(401).send('Invalid username or password');
+  }
 };
 
 exports.loginUser = async (req, res) => {};

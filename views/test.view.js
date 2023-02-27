@@ -21,7 +21,10 @@ const displayContactName = (res, contact) => {
   }
 };
 
+let userData;
+
 exports.loginPage = (req, res) => {
+  userData = req.body;
   res.send(/*template*/ `
       <html>
         <body>
@@ -35,6 +38,8 @@ exports.loginPage = (req, res) => {
         </body>
       </html>
     `);
+
+  console.log(userData);
 };
 
 exports.loginUser = async (req, res) => {};

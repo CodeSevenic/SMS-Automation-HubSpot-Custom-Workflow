@@ -49,15 +49,17 @@ exports.login = (req, res) => {
   };
 
   // Find user by username and password
-  const user = users.find((u) => u.username === username && u.password === password);
+  // const user = users.find((u) => u.username === username && u.password === password);
 
-  if (user) {
-    // Successful login
-    res.send('Welcome ' + username + '!');
-  } else {
-    // Invalid login
-    res.status(401).send('Invalid username or password');
-  }
+  // if (user) {
+  //   // Successful login
+  //   res.send('Welcome ' + username + '!');
+  // } else {
+  //   // Invalid login
+  //   res.status(401).send('Invalid username or password');
+  // }
+
+  console.log(userData);
 };
 
 exports.loginUser = async (req, res) => {};

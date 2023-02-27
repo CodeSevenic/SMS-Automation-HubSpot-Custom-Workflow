@@ -21,6 +21,8 @@ const displayContactName = (res, contact) => {
   }
 };
 
+exports.loginUser = async (req, res) => {};
+
 exports.renderView = async (req, res) => {
   res.setHeader('Content-Type', 'text/html');
   res.write(`<h2>SMS Automation</h2>`);

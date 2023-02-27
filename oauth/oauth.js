@@ -1,7 +1,7 @@
 require('dotenv').config();
 const request = require('request-promise-native');
 const NodeCache = require('node-cache');
-const { persistToken, getTokenIfExist } = require('../firebase/firebase');
+const { persistToken, getTokenIfExist, addUserToBD } = require('../firebase/firebase');
 
 let refreshTokenStore = {};
 const accessTokenCache = new NodeCache({ deleteOnExpire: true });

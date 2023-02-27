@@ -118,21 +118,7 @@ app.get('/oauth-callback', async (req, res) => {
 // ];
 
 // // Login page
-// app.get('/', (req, res) => {
-//   res.send(`
-//     <html>
-//       <body>
-//         <form method="POST" action="/login">
-//           <label for="username">Username:</label>
-//           <input type="text" id="username" name="username"><br>
-//           <label for="password">Password:</label>
-//           <input type="password" id="password" name="password"><br>
-//           <button type="submit">Login</button>
-//         </form>
-//       </body>
-//     </html>
-//   `);
-// });
+// app.get('/', loginPage);
 
 // // Login logic
 // app.post('/login', (req, res) => {

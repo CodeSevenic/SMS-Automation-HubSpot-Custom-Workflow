@@ -24,16 +24,15 @@ const firebaseConfig = {
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
 
-// Store user
-exports.persistUser = async (username, password, token) => {
+// Store user to database
+exports.addUserToBD = async (user) => {
   try {
-    await setDoc(doc(db, 'users', 'tokens'), {
-      token,
-      username,
-      password,
+    const docRef = await addDoc(collection(db, 'users'), {
+      user,
     });
+    console.log('Document written with ID: ', docRef.id);
   } catch (e) {
-    console.log(e);
+    console.error('Error adding document: ', e);
   }
 };
 

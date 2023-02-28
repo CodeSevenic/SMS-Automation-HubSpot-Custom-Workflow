@@ -34,7 +34,9 @@ exports.register = (req, res) => {
   }
   // If there are no validation errors, save user data to database or perform other actions
   const { username, email, password } = req.body;
-
+  if (username && password && password) {
+    res.redirect('/login');
+  }
   // TODO: save user data to database or perform other actions
   res.send(`Registration successful. Username: ${username}, Email: ${email}`);
 };

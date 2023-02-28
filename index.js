@@ -6,9 +6,9 @@ const app = express();
 const cors = require('cors');
 
 const port = process.env.PORT || 8000;
-const { renderView, loginPage, login } = require('./views/test.view');
 const { exchangeForTokens } = require('./oauth/oauth');
 const { main } = require('./twilio/twilio');
+const { renderView, login, loginPage } = require('./controllers/auth');
 
 if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
   throw new Error('Missing CLIENT_ID or CLIENT_SECRET environment variable.');

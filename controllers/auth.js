@@ -1,5 +1,7 @@
 ﻿const { validationResult } = require('express-validator');
 
+let userData;
+
 exports.registerForm = (req, res) => {
   res.send(/*template*/ `
     <h1>Registration Form</h1>
@@ -36,7 +38,21 @@ exports.register = (req, res) => {
   res.send(`Registration successful. Username: ${username}, Email: ${email}`);
 };
 
-let userData;
+exports.loginPage = (req, res) => {
+  res.send(/*template*/ `
+  <html>
+    <body>
+      <form method="POST" action="/login">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username"><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password"><br>
+        <button type="submit">Login</button>
+      </form>
+    </body>
+  </html>
+  `);
+};
 
 exports.login = (req, res) => {
   const { username, password } = req.body;

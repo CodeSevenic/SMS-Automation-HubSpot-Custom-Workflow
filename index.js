@@ -14,6 +14,7 @@ const {
   registerForm,
   register,
   attemptLogin,
+  welcomePage,
 } = require('./controllers/auth');
 
 if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
@@ -123,7 +124,7 @@ app.get('/', registerForm);
 app.post('/register', register);
 
 //User Login logic
-app.get('/signin', loginPage);
+app.get('/', welcomePage);
 app.post('/login', attemptLogin);
 
 app.get('/view', renderView);

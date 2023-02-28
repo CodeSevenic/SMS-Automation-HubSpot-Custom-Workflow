@@ -5,6 +5,7 @@ const { getUserFromDB } = require('../firebase/firebase');
 const { isAuthorized, getAccessToken } = require('../oauth/oauth');
 
 let userData;
+let userLoggedIn = false;
 
 exports.registerForm = (req, res) => {
   res.send(/*template*/ `
@@ -40,27 +41,17 @@ exports.register = (req, res) => {
   const { username, email, password } = req.body;
   if (username && email && password) {
     console.log(username, password, email);
+    //Set new registered user information
+    userData = {
+      username,
+      password,
+      email,
+    };
     res.redirect('/login');
   }
   // TODO: save user data to database or perform other actions
   res.status(200).send();
   // res.send(`Registration successful. Username: ${username}, Email: ${email}`);
-};
-
-exports.loginPage = (req, res) => {
-  res.send(/*template*/ `
-  <html>
-    <body>
-      <form method="POST" action="/login">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username"><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password"><br>
-        <button type="submit">Login</button>
-      </form>
-    </body>
-  </html>
-  `);
 };
 
 let dbData = [];
@@ -85,9 +76,44 @@ exports.attemptLogin = async (req, res) => {
 
   if (username === user?.username && password === user?.password) {
     console.log('User details match registered user 🙂😎');
+    userLoggedIn = true;
   } else {
     console.log('User details not registered!');
   }
+};
+
+exports.welcomePage = async (req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  let authorized = await isAuthorized(req.sessionID);
+  console.log(authorized);
+  if (authorized) {
+    res.write(`<h2>SMS Automation</h2>`);
+    console.log('Other hello: ', userData);
+    const accessToken = await getAccessToken(req.sessionID, userData);
+    hubspotClient = new hubspot.Client({ accessToken: `${accessToken}` });
+    const contact = await resContacts(accessToken);
+    displayContactName(res, contact);
+    // recentUpdatedProperties(accessToken);
+    // createCustomWorkflow();
+    // getAllCustomActions();
+  } else {
+    res.write(`<a href="/install"><h3>Install the app</h3></a>`);
+  }
+  res.end();
+
+  res.send(/*template*/ `
+  <html>
+    <body>
+      <form method="POST" action="/login">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username"><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password"><br>
+        <button type="submit">Login</button>
+      </form>
+    </body>
+  </html>
+  `);
 };
 
 exports.renderView = async (req, res) => {

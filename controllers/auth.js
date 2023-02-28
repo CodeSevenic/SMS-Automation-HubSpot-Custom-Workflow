@@ -1,6 +1,8 @@
 ﻿const { async } = require('@firebase/util');
 const { validationResult } = require('express-validator');
+const { resContacts } = require('../api-queries/huspots-queries');
 const { getUserFromDB } = require('../firebase/firebase');
+const { isAuthorized, getAccessToken } = require('../oauth/oauth');
 
 let userData;
 

@@ -34,6 +34,7 @@ exports.register = (req, res) => {
   }
   // If there are no validation errors, save user data to database or perform other actions
   const { username, email, password } = req.body;
+
   // TODO: save user data to database or perform other actions
   res.send(`Registration successful. Username: ${username}, Email: ${email}`);
 };
@@ -52,31 +53,6 @@ exports.loginPage = (req, res) => {
     </body>
   </html>
   `);
-};
-
-exports.login = (req, res) => {
-  const { username, password } = req.body;
-  userData = {
-    username: username,
-    password: password,
-  };
-
-  console.log(userData);
-  // Find user by username and password
-  // const user = users.find((u) => u.username === username && u.password === password);
-
-  // if (user) {
-  //   // Successful login
-  //   res.send('Welcome ' + username + '!');
-  // } else {
-  //   // Invalid login
-  //   res.status(401).send('Invalid username or password');
-  // }
-  if (username && password) {
-    res.redirect('/view');
-  }
-
-  res.status(200).send();
 };
 
 exports.renderView = async (req, res) => {

@@ -8,7 +8,13 @@ const cors = require('cors');
 const port = process.env.PORT || 8000;
 const { exchangeForTokens } = require('./oauth/oauth');
 const { main } = require('./twilio/twilio');
-const { renderView, loginPage, registerForm, register } = require('./controllers/auth');
+const {
+  renderView,
+  loginPage,
+  registerForm,
+  register,
+  attemptLogin,
+} = require('./controllers/auth');
 
 if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
   throw new Error('Missing CLIENT_ID or CLIENT_SECRET environment variable.');
@@ -112,12 +118,13 @@ app.get('/oauth-callback', async (req, res) => {
   }
 });
 
-// Login page
+//User Registration
 app.get('/', registerForm);
 app.post('/register', register);
 
-// // // Login logic
-app.get('/login', loginPage);
+//User Login logic
+app.get('/signin', loginPage);
+app.post('/login', attemptLogin);
 
 app.get('/view', renderView);
 

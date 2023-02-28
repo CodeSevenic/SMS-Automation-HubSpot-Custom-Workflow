@@ -82,3 +82,22 @@ exports.getTokenIfExist = async () => {
   }
   return refreshToken;
 };
+
+// get users from DB
+exports.getUserFromDB = async () => {
+  const querySnapshot = await getDocs(collection(db, 'users'));
+  let users = [];
+  querySnapshot.forEach((doc) => {
+    // console.log(`${doc.id} => ${doc.get('user.body.name')}`);
+    const user = {
+      token: doc.get('token'),
+      username: doc.get('username'),
+      password: doc.get('password'),
+    };
+
+    users.push(user);
+  });
+
+  console.log(users);
+  return users;
+};

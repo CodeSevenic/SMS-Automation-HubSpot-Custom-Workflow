@@ -1,4 +1,6 @@
-﻿const { validationResult } = require('express-validator');
+﻿const { async } = require('@firebase/util');
+const { validationResult } = require('express-validator');
+const { getUserFromDB } = require('../firebase/firebase');
 
 let userData;
 
@@ -57,6 +59,33 @@ exports.loginPage = (req, res) => {
     </body>
   </html>
   `);
+};
+
+let dbData = [];
+
+const getDbData = async () => {
+  dbData = await getUserFromDB();
+};
+getDbData();
+
+exports.retrieveUserFromDB = (input) => {
+  const matches = dbData.filter(
+    (user) => user.username === input.username && user.password === input.password
+  );
+  return matches[0];
+};
+
+exports.attemptLogin = async (req, res) => {
+  const user = await this.retrieveUserFromDB(req.body);
+  console.log(user);
+  let username = req.body.username;
+  let password = req.body.password;
+
+  if (username === user?.username && password === user?.password) {
+    console.log('User details match registered user 🙂😎');
+  } else {
+    console.log('User details not registered!');
+  }
 };
 
 exports.renderView = async (req, res) => {

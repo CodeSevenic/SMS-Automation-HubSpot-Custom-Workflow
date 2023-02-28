@@ -39,7 +39,8 @@ exports.register = (req, res) => {
     res.redirect('/login');
   }
   // TODO: save user data to database or perform other actions
-  res.send(`Registration successful. Username: ${username}, Email: ${email}`);
+  res.status(200).send();
+  // res.send(`Registration successful. Username: ${username}, Email: ${email}`);
 };
 
 exports.loginPage = (req, res) => {

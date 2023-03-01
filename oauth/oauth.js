@@ -45,6 +45,7 @@ exports.exchangeForTokens = async (userId, exchangeProof, user) => {
     if (user.username && user.password && user.email) {
       addUserToBD(user, refreshTokenStore[userId]);
     }
+
     return tokens.access_token;
   } catch (e) {
     console.error(`       > Error exchanging ${exchangeProof.grant_type} for access token`);

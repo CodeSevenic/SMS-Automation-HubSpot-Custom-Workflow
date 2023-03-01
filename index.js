@@ -15,6 +15,7 @@ const {
   register,
   attemptLogin,
   welcomePage,
+  hubspotActions,
 } = require('./controllers/auth');
 
 if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
@@ -124,7 +125,7 @@ app.post('/register', register);
 app.get('/register', register);
 
 //User Login logic
-app.get('/', welcomePage);
+app.get('/', hubspotActions);
 app.post('/login', attemptLogin);
 
 app.use(

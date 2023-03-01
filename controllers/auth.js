@@ -88,11 +88,11 @@ exports.attemptLogin = async (req, res) => {
 };
 
 exports.hubspotActions = async (req, res) => {
-  res.setHeader('Content-Type', 'text/html');
   let authorized = await isAuthorized(req.sessionID);
+  res.setHeader('Content-Type', 'text/html');
+  res.write(`<h2>SMS Automation</h2>`);
   console.log(authorized);
   if (authorized) {
-    res.write(`<h2>SMS Automation</h2>`);
     console.log('Other hello: ', userData);
     const accessToken = await getAccessToken(req.sessionID, userData);
     hubspotClient = new hubspot.Client({ accessToken: `${accessToken}` });

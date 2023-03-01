@@ -4,7 +4,7 @@ const { resContacts } = require('../api-queries/huspots-queries');
 const { getUserFromDB } = require('../firebase/firebase');
 const { isAuthorized, getAccessToken } = require('../oauth/oauth');
 
-let userData;
+let registerData;
 let userLoggedIn = false;
 
 exports.register = (req, res) => {
@@ -43,7 +43,7 @@ exports.register = (req, res) => {
     if (username && email && password) {
       console.log(username, password, email);
       //Set new registered user information
-      userData = {
+      registerData = {
         username,
         password,
         email,
@@ -93,10 +93,10 @@ exports.hubspotActions = async (req, res) => {
     let authorized = await isAuthorized(req.sessionID);
     res.setHeader('Content-Type', 'text/html');
     res.write(`<h2>SMS Automation</h2>`);
+    console.log('Other hello: ', registerData);
     console.log(authorized);
     if (authorized) {
-      console.log('Other hello: ', userData);
-      const accessToken = await getAccessToken(req.sessionID, userData);
+      const accessToken = await getAccessToken(req.sessionID, registerData);
       hubspotClient = new hubspot.Client({ accessToken: `${accessToken}` });
       const contact = await resContacts(accessToken);
       displayContactName(res, contact);

@@ -124,10 +124,8 @@ app.post('/register', register);
 app.get('/register', register);
 
 //User Login logic
-app.get('/welcome', welcomePage);
+app.get('/', welcomePage);
 app.post('/login', attemptLogin);
-
-app.get('/view', renderView);
 
 app.use(
   cors({

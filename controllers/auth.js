@@ -7,51 +7,102 @@ const { isAuthorized, getAccessToken } = require('../oauth/oauth');
 let userData;
 let userLoggedIn = false;
 
-exports.registerForm = (req, res) => {
-  res.send(/*template*/ `
-    <h1>Registration Form</h1>
-    <form method="POST" action="/register">
-      <label>
-        Username:
-        <input type="text" name="username">
-      </label>
-      <br>
-      <label>
-        Email:
-        <input type="email" name="email">
-      </label>
-      <br>
-      <label>
-        Password:
-        <input type="password" name="password">
-      </label>
-      <br>
-      <button type="submit">Register</button>
-    </form>
-  `);
-};
+// exports.registerForm = (req, res) => {
+//   res.send(/*template*/ `
+//     <h1>Registration Form</h1>
+//     <form method="POST" action="/register">
+//       <label>
+//         Username:
+//         <input type="text" name="username">
+//       </label>
+//       <br>
+//       <label>
+//         Email:
+//         <input type="email" name="email">
+//       </label>
+//       <br>
+//       <label>
+//         Password:
+//         <input type="password" name="password">
+//       </label>
+//       <br>
+//       <button type="submit">Register</button>
+//     </form>
+//   `);
+// };
+
+// exports.register = (req, res) => {
+//   // Check for validation errors
+//   const errors = validationResult(req);
+//   if (!errors.isEmpty()) {
+//     return res.status(422).json({ errors: errors.array() });
+//   }
+//   // If there are no validation errors, save user data to database or perform other actions
+//   const { username, email, password } = req.body;
+//   if (username && email && password) {
+//     console.log(username, password, email);
+//     //Set new registered user information
+//     userData = {
+//       username,
+//       password,
+//       email,
+//     };
+//     res.redirect('/login');
+//   }
+//   // TODO: save user data to database or perform other actions
+//   res.status(200).send();
+//   // res.send(`Registration successful. Username: ${username}, Email: ${email}`);
+// };
 
 exports.register = (req, res) => {
-  // Check for validation errors
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+  if (req.method === 'GET') {
+    // Render registration form
+    res.send(/*template*/ `
+      <h1>Registration Form</h1>
+      <form method="POST" action="/register">
+        <label>
+          Username:
+          <input type="text" name="username">
+        </label>
+        <br>
+        <label>
+          Email:
+          <input type="email" name="email">
+        </label>
+        <br>
+        <label>
+          Password:
+          <input type="password" name="password">
+        </label>
+        <br>
+        <button type="submit">Register</button>
+      </form>
+    `);
+  } else if (req.method === 'POST') {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
+    // If there are no validation errors, save user data to database or perform other actions
+    const { username, email, password } = req.body;
+    if (username && email && password) {
+      console.log(username, password, email);
+      //Set new registered user information
+      userData = {
+        username,
+        password,
+        email,
+      };
+      // TODO: save user data to database or perform other actions
+      res.redirect('/login');
+    } else {
+      res.status(400).send('Missing required fields');
+    }
+  } else {
+    res.status(405).send('Method Not Allowed');
   }
-  // If there are no validation errors, save user data to database or perform other actions
-  const { username, email, password } = req.body;
-  if (username && email && password) {
-    console.log(username, password, email);
-    //Set new registered user information
-    userData = {
-      username,
-      password,
-      email,
-    };
-    res.redirect('/login');
-  }
-  // TODO: save user data to database or perform other actions
-  res.status(200).send();
-  // res.send(`Registration successful. Username: ${username}, Email: ${email}`);
 };
 
 let dbData = [];

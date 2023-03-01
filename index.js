@@ -120,8 +120,8 @@ app.get('/oauth-callback', async (req, res) => {
 });
 
 //User Registration
-app.get('/register-form', registerForm);
 app.post('/register', register);
+app.get('/register', register);
 
 //User Login logic
 app.get('/welcome', welcomePage);

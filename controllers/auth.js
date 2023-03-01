@@ -5,6 +5,7 @@ const { getUserFromDB } = require('../firebase/firebase');
 const { isAuthorized, getAccessToken } = require('../oauth/oauth');
 
 let registerData;
+let loggedInData;
 let userLoggedIn = false;
 
 exports.register = (req, res) => {
@@ -81,6 +82,7 @@ exports.attemptLogin = async (req, res) => {
   if (username === user?.username && password === user?.password) {
     console.log('User details match registered user 🙂😎');
     userLoggedIn = true;
+    loggedInData = user;
     res.redirect('/');
   } else {
     console.log('User details not registered!');

@@ -50,7 +50,7 @@ app.get('/register', register);
 
 //User Login logic
 app.get('/', hubspotActions);
-app.post('/login', attemptLogin);
+app.post('/', attemptLogin);
 
 app.use(
   cors({

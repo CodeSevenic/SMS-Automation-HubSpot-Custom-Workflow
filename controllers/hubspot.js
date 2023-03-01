@@ -1,7 +1,11 @@
-﻿require('dotenv').config();
+﻿const { exchangeForTokens } = require('../oauth/oauth');
+
+require('dotenv').config();
 if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
   throw new Error('Missing CLIENT_ID or CLIENT_SECRET environment variable.');
 }
+
+const port = process.env.PORT || 8000;
 
 //===========================================================================//
 //  HUBSPOT APP CONFIGURATION

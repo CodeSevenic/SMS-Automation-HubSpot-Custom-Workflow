@@ -122,23 +122,3 @@ exports.login = async (req, res) => {
   </html>
   `);
 };
-
-exports.renderView = async (req, res) => {
-  res.setHeader('Content-Type', 'text/html');
-  res.write(`<h2>SMS Automation</h2>`);
-  let authorized = await isAuthorized(req.sessionID);
-  console.log(authorized);
-  if (authorized) {
-    console.log('Other hello: ', userData);
-    const accessToken = await getAccessToken(req.sessionID, userData);
-    hubspotClient = new hubspot.Client({ accessToken: `${accessToken}` });
-    const contact = await resContacts(accessToken);
-    displayContactName(res, contact);
-    // recentUpdatedProperties(accessToken);
-    // createCustomWorkflow();
-    // getAllCustomActions();
-  } else {
-    res.write(`<a href="/install"><h3>Install the app</h3></a>`);
-  }
-  res.end();
-};

@@ -87,7 +87,7 @@ exports.attemptLogin = async (req, res) => {
   }
 };
 
-exports.welcomePage = async (req, res) => {
+exports.hubspotActions = async (req, res) => {
   res.setHeader('Content-Type', 'text/html');
   let authorized = await isAuthorized(req.sessionID);
   console.log(authorized);

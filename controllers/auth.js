@@ -87,37 +87,108 @@ exports.welcomePage = async (req, res) => {
   res.setHeader('Content-Type', 'text/html');
   let authorized = await isAuthorized(req.sessionID);
   console.log(authorized);
-  if (userLoggedIn) {
-    if (authorized) {
-      res.write(`<h2>SMS Automation</h2>`);
-      console.log('Other hello: ', userData);
-      const accessToken = await getAccessToken(req.sessionID, userData);
-      hubspotClient = new hubspot.Client({ accessToken: `${accessToken}` });
-      const contact = await resContacts(accessToken);
-      displayContactName(res, contact);
-      // recentUpdatedProperties(accessToken);
-      // createCustomWorkflow();
-      // getAllCustomActions();
-    } else {
-      res.write(`<a href="/install"><h3>Install the app</h3></a>`);
-    }
-    res.end();
+  if (authorized) {
+    res.write(`<h2>SMS Automation</h2>`);
+    console.log('Other hello: ', userData);
+    const accessToken = await getAccessToken(req.sessionID, userData);
+    hubspotClient = new hubspot.Client({ accessToken: `${accessToken}` });
+    const contact = await resContacts(accessToken);
+    displayContactName(res, contact);
+    // recentUpdatedProperties(accessToken);
+    // createCustomWorkflow();
+    // getAllCustomActions();
   } else {
-    res.send(/*template*/ `
-    <html>
-      <body>
-        <form method="POST" action="/login">
-          <label for="username">Username:</label>
-          <input type="text" id="username" name="username"><br>
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password"><br>
-          <button type="submit">Login</button>
-        </form>
-      </body>
-    </html>
+    res.write(`<a href="/install"><h3>Install the app</h3></a>`);
+  }
+  res.end();
+};
+
+exports.login = async (req, res) => {
+  res.send(/*template*/ `
+  <html>
+    <body>
+      <form method="POST" action="/">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username"><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password"><br>
+        <button type="submit">Login</button>
+      </form>
+    </body>
+  </html>
+  `);
+};
+
+exports.login = async (req, res) => {
+  // Check if the user is already logged in
+  if (req.session.user) {
+    return res.redirect('/dashboard');
+  }
+
+  // Check if the user submitted the login form
+  if (req.method === 'POST') {
+    const { username, password } = req.body;
+
+    // Check if the username and password are valid
+    if (isValidUser(username, password)) {
+      // Store the user in the session
+      req.session.user = username;
+
+      // Redirect to the dashboard
+      return res.redirect('/dashboard');
+    } else {
+      // If the user is not valid, show an error message
+      return res.send(/*template*/ `
+        <html>
+          <body>
+            <h2>Invalid username or password</h2>
+            <form method="POST" action="/">
+              <label for="username">Username:</label>
+              <input type="text" id="username" name="username"><br>
+              <label for="password">Password:</label>
+              <input type="password" id="password" name="password"><br>
+              <button type="submit">Login</button>
+            </form>
+            <br>
+            <a href="/register">Register</a>
+          </body>
+        </html>
+      `);
+    }
+  } else {
+    // If the user has not submitted the login form, show the login page
+    return res.send(/*template*/ `
+      <html>
+        <body>
+          <form method="POST" action="/">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username"><br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password"><br>
+            <button type="submit">Login</button>
+          </form>
+          <br>
+          <a href="/register">Register</a>
+        </body>
+      </html>
     `);
   }
 };
+
+function isValidUser(username, password) {
+  // Check if the user is registered
+  if (isRegisteredUser(username)) {
+    // Check if the password is correct
+    return password === users[username].password;
+  } else {
+    // If the user is not registered, return false
+    return false;
+  }
+}
+
+function isRegisteredUser(username) {
+  return users.hasOwnProperty(username);
+}
 
 exports.renderView = async (req, res) => {
   res.setHeader('Content-Type', 'text/html');

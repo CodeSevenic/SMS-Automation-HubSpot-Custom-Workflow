@@ -87,6 +87,9 @@ exports.attemptLogin = async (req, res) => {
   } else {
     console.log('User details not registered!');
     userLoggedIn = false;
+    res.status(401).json({
+      message: 'Invalid credentials',
+    });
   }
 };
 

@@ -1,4 +1,4 @@
-﻿const { async } = require('@firebase/util');
+﻿const hubspot = require('@hubspot/api-client');
 const { validationResult } = require('express-validator');
 const { resContacts } = require('../api-queries/huspots-queries');
 const { getUserFromDB } = require('../firebase/firebase');
@@ -90,15 +90,33 @@ exports.attemptLogin = async (req, res) => {
   }
 };
 
+exports.logout = (req, res) => {
+  userLoggedIn = false;
+  console.log('Try Logout');
+  loggedInData = {};
+  res.redirect('/');
+};
+
+const displayContactName = (res, contact) => {
+  res.write('<form method="POST" action="/logout">');
+  for (val of contact) {
+    res.write(`<p>Contact name: ${val.properties.firstname} ${val.properties.lastname}</p>`);
+  }
+  res.write('<button type="submit">Logout</button>');
+  res.write('</form>');
+};
+
 exports.hubspotActions = async (req, res) => {
   if (userLoggedIn) {
-    let authorized = await isAuthorized(req.sessionID);
+    let authorized = await isAuthorized(loggedInData.token);
     res.setHeader('Content-Type', 'text/html');
     res.write(`<h2>SMS Automation</h2>`);
     console.log('Other hello: ', registerData);
+    console.log('Logged In Data: ', loggedInData);
     console.log(authorized);
     if (authorized) {
-      const accessToken = await getAccessToken(req.sessionID, registerData);
+      const accessToken = await getAccessToken(req.sessionID, registerData, loggedInData.token);
+
       hubspotClient = new hubspot.Client({ accessToken: `${accessToken}` });
       const contact = await resContacts(accessToken);
       displayContactName(res, contact);
@@ -125,5 +143,3 @@ exports.hubspotActions = async (req, res) => {
     `);
   }
 };
-
-exports.login = async (req, res) => {};

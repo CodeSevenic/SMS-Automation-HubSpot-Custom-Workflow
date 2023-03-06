@@ -15,9 +15,3 @@ const { isAuthorized, getAccessToken } = require('../oauth/oauth');
 //=======================================================//
 //   Displaying test information info to the browser     //
 //=======================================================//
-
-const displayContactName = (res, contact) => {
-  for (val of contact) {
-    res.write(`<p>Contact name: ${val.properties.firstname} ${val.properties.lastname}</p>`);
-  }
-};

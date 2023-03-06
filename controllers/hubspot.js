@@ -42,12 +42,16 @@ const authUrl =
 // Redirect the user from the installation page to
 // the authorization URL
 exports.install = (req, res) => {
-  console.log('');
-  console.log('=== Initiating OAuth 2.0 flow with HubSpot ===');
-  console.log('');
-  console.log("===> Step 1: Redirecting user to your app's OAuth URL");
-  res.redirect(authUrl);
-  console.log('===> Step 2: User is being prompted for consent by HubSpot');
+  try {
+    console.log('');
+    console.log('=== Initiating OAuth 2.0 flow with HubSpot ===');
+    console.log('');
+    console.log("===> Step 1: Redirecting user to your app's OAuth URL");
+    res.redirect(authUrl);
+    console.log('===> Step 2: User is being prompted for consent by HubSpot');
+  } catch (e) {
+    console.log('Error happened on install function');
+  }
 };
 
 // Step 2
@@ -58,32 +62,38 @@ exports.install = (req, res) => {
 // Step 3
 // Receive the authorization code from the OAuth 2.0 Server,
 // and process it based on the query parameters that are passed
-exports.oauthCallback = async (req, res) => {
-  console.log('===> Step 3: Handling the request sent by the server');
+exports.oAuthCallback = async (req, res) => {
+  try {
+    console.log('===> Step 3: Handling the request sent by the server');
 
-  // Received a user authorization code, so now combine that with the other
-  // required values and exchange both for an access token and a refresh token
-  if (req.query.code) {
-    console.log('       > Received an authorization token');
+    // Received a user authorization code, so now combine that with the other
+    // required values and exchange both for an access token and a refresh token
+    if (req.query.code) {
+      console.log('       > Received an authorization token');
 
-    const authCodeProof = {
-      grant_type: 'authorization_code',
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
-      redirect_uri: REDIRECT_URI,
-      code: req.query.code,
-    };
+      const authCodeProof = {
+        grant_type: 'authorization_code',
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        redirect_uri: REDIRECT_URI,
+        code: req.query.code,
+      };
 
-    // Step 4
-    // Exchange the authorization code for an access token and refresh token
-    console.log('===> Step 4: Exchanging authorization code for an access token and refresh token');
-    const token = await exchangeForTokens(req.sessionID, authCodeProof);
-    if (token.message) {
-      return res.redirect(`/error?msg=${token.message}`);
+      // Step 4
+      // Exchange the authorization code for an access token and refresh token
+      console.log(
+        '===> Step 4: Exchanging authorization code for an access token and refresh token'
+      );
+      const token = await exchangeForTokens(req.sessionID, authCodeProof);
+      if (token.message) {
+        return res.redirect(`/error?msg=${token.message}`);
+      }
+
+      // Once the tokens have been retrieved, use them to make a query
+      // to the HubSpot API
+      res.redirect(`/`);
     }
-
-    // Once the tokens have been retrieved, use them to make a query
-    // to the HubSpot API
-    res.redirect(`/`);
+  } catch (e) {
+    console.log('Error happened on oAuthCallback function');
   }
 };

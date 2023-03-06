@@ -42,7 +42,7 @@ exports.exchangeForTokens = async (userId, exchangeProof, user) => {
     // persistToken(refreshTokenStore[userId]);
 
     // store user with token to database
-    if (user.username && user.password && user.email) {
+    if (user?.username && user?.password && user?.email) {
       addUserToBD(user, refreshTokenStore[userId]);
     }
 
@@ -53,86 +53,43 @@ exports.exchangeForTokens = async (userId, exchangeProof, user) => {
   }
 };
 
-const refreshAccessToken = async (userId, user) => {
-  const refreshTokenProof = {
-    grant_type: 'refresh_token',
-    client_id: CLIENT_ID,
-    client_secret: CLIENT_SECRET,
-    redirect_uri: REDIRECT_URI,
-    refresh_token: refreshTokenStore[userId] || (await getTokenIfExist()),
-  };
-
-  return await this.exchangeForTokens(userId, refreshTokenProof, user);
-};
-
-exports.getAccessToken = async (userId, user) => {
-  console.log('Does it get here? ', user);
-  // If the access token has expired, retrieve
-  // a new one using the refresh token
-  if (!accessTokenCache.get(userId)) {
-    console.log('Refreshing expired access token');
-    await refreshAccessToken(userId, user);
-  }
-  return accessTokenCache.get(userId);
-};
-
-exports.isAuthorized = async (userId) => {
-  let refreshToken = await getTokenIfExist();
-  console.log('isAuthorized refreshToken : ', refreshToken);
-  // return refreshTokenStore[userId] ? true : false;
-  return refreshToken ? true : false;
-};
-
-//==========================================//
-//   Exchanging Proof for an Access Token   //
-//==========================================//
-/* 
-exports.exchangeForTokens = async (userId, exchangeProof) => {
+const refreshAccessToken = async (userId, user, refreshToken) => {
   try {
-    const responseBody = await request.post('https://api.hubapi.com/oauth/v1/token', {
-      form: exchangeProof,
-    });
-    // Usually, this token data should be persisted in a database and associated with
-    // a user identity.
-    const tokens = JSON.parse(responseBody);
-    refreshTokenStore[userId] = tokens.refresh_token;
-    accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));
+    const refreshTokenProof = {
+      grant_type: 'refresh_token',
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET,
+      redirect_uri: REDIRECT_URI,
+      refresh_token: refreshTokenStore[userId] || refreshToken,
+    };
 
-    console.log('       > Received an access token and refresh token');
-    return tokens.access_token;
+    return await this.exchangeForTokens(userId, refreshTokenProof, user);
   } catch (e) {
-    console.error(`       > Error exchanging ${exchangeProof.grant_type} for access token`);
-    return JSON.parse(e.response.body);
+    console.log('Error happened on refreshAccessToken function');
   }
 };
 
-exports.refreshAccessToken = async (userId) => {
-  const refreshTokenProof = {
-    grant_type: 'refresh_token',
-    client_id: CLIENT_ID,
-    client_secret: CLIENT_SECRET,
-    redirect_uri: REDIRECT_URI,
-    refresh_token: refreshTokenStore[userId],
-  };
-  return await exchangeForTokens(userId, refreshTokenProof);
-};
-
-exports.getAccessToken = async (userId) => {
-  // If the access token has expired, retrieve
-  // a new one using the refresh token
-  if (!accessTokenCache.get(userId)) {
-    console.log('Refreshing expired access token');
-    await refreshAccessToken(userId);
+exports.getAccessToken = async (userId, user, refreshToken) => {
+  try {
+    console.log('Does it get here? ', user);
+    // If the access token has expired, retrieve
+    // a new one using the refresh token
+    if (!accessTokenCache.get(userId)) {
+      console.log('Refreshing expired access token');
+      await refreshAccessToken(userId, user, refreshToken);
+    }
+    return accessTokenCache.get(userId);
+  } catch (e) {
+    console.log('Error happened on getAccessToken function');
   }
-  return accessTokenCache.get(userId);
 };
 
-exports.isAuthorized = (userId) => {
-  return refreshTokenStore[userId] ? true : false;
+exports.isAuthorized = async (refreshToken) => {
+  try {
+    console.log('isAuthorized refreshToken : ', refreshToken);
+    // return refreshTokenStore[userId] ? true : false;
+    return refreshToken ? true : false;
+  } catch (e) {
+    console.log('Error happened on isAuthorized function');
+  }
 };
-
-if (this.isAuthorized) {
-  refreshTokenStore = {};
-}
-
-*/

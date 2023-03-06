@@ -6,10 +6,9 @@ const app = express();
 const cors = require('cors');
 
 const port = process.env.PORT || 8000;
-const { exchangeForTokens } = require('./oauth/oauth');
 const { main } = require('./twilio/twilio');
-const { register, attemptLogin, hubspotActions } = require('./controllers/auth');
-const { install, oauthCallback } = require('./controllers/hubspot');
+const { register, attemptLogin, hubspotActions, logout } = require('./controllers/auth');
+const { install, oauthCallback, oAuthCallback } = require('./controllers/hubspot');
 
 // app.use(express.json());
 app.use(express.json({ limit: '10kb' }));
@@ -42,7 +41,7 @@ app.get('/install', install);
 // Step 3
 // Receive the authorization code from the OAuth 2.0 Server,
 // and process it based on the query parameters that are passed
-app.get('/oauth-callback', oauthCallback);
+app.get('/oauth-callback', oAuthCallback);
 
 //User Registration
 app.post('/register', register);
@@ -51,6 +50,7 @@ app.get('/register', register);
 //User Login logic
 app.get('/', hubspotActions);
 app.post('/', attemptLogin);
+app.post('/logout', logout);
 
 app.use(
   cors({

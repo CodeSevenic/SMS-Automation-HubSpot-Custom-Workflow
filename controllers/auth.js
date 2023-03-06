@@ -119,7 +119,6 @@ exports.hubspotActions = async (req, res) => {
     console.log(authorized);
     if (authorized) {
       const accessToken = await getAccessToken(req.sessionID, registerData, loggedInData.token);
-
       hubspotClient = new hubspot.Client({ accessToken: `${accessToken}` });
       const contact = await resContacts(accessToken);
       displayContactName(res, contact);

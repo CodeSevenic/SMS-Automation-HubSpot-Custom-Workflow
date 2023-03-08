@@ -1,5 +1,4 @@
 ﻿const { exchangeForTokens } = require('../oauth/oauth');
-const { registerData } = require('./auth');
 
 require('dotenv').config();
 if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {

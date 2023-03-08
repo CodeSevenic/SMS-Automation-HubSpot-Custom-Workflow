@@ -3,7 +3,6 @@ const { validationResult } = require('express-validator');
 const { resContacts } = require('../api-queries/huspots-queries');
 const { getUserFromDB } = require('../firebase/firebase');
 const { isAuthorized, getAccessToken } = require('../oauth/oauth');
-const { exchangeForTokens } = require('../oauth/oauth');
 const { oAuthCallbackFunction } = require('./hubspot');
 
 let hubspotClient;
@@ -116,14 +115,21 @@ const displayContactName = (res, contact) => {
 
 exports.hubspotActions = async (req, res) => {
   if (userLoggedIn) {
-    const authorized = await isAuthorized(loggedInData.token);
+    console.log('Before SMS Automation');
+    const authorized = isAuthorized(loggedInData.refresh_token);
+
     res.setHeader('Content-Type', 'text/html');
     res.write(`<h2>SMS Automation</h2>`);
     console.log('Other hello: ', registerData);
     console.log('Logged In Data: ', loggedInData);
     console.log(authorized);
     if (authorized) {
-      const accessToken = await getAccessToken(req.sessionID, registerData, loggedInData?.token);
+      console.log('OH this happened!!!');
+      const accessToken = await getAccessToken(
+        req.sessionID,
+        registerData,
+        loggedInData?.refresh_token
+      );
       hubspotClient = new hubspot.Client({ accessToken: `${accessToken}` });
       const contact = await resContacts(accessToken);
       displayContactName(res, contact);
@@ -154,6 +160,7 @@ exports.hubspotActions = async (req, res) => {
 
 // ============= HubSpot Connection =========== //
 
-exports.oAuthCallback = (req, res) => {
-  oAuthCallbackFunction(req, res, registerData);
+exports.oAuthCallback = async (req, res) => {
+  await oAuthCallbackFunction(req, res, registerData);
+  getDbData();
 };

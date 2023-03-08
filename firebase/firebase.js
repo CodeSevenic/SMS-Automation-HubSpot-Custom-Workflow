@@ -26,7 +26,29 @@ const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
 
 // Store user to database
-exports.addUserToBD = async ({ username, password }, token) => {
+exports.addUserToBD = async (
+  { username, password },
+  refresh_token,
+  access_token,
+  expires_in,
+  userId
+) => {
+  try {
+    const docRef = await addDoc(collection(db, 'users'), {
+      username,
+      password,
+      refresh_token,
+      access_token,
+      expires_in,
+      userId: userId || 'none',
+    });
+    console.log('Document written with ID: ', docRef.id);
+  } catch (e) {
+    console.error('Error adding document: ', e);
+  }
+};
+// Store user to database
+exports.addUserToBD2 = async ({ username, password }, token) => {
   console.log('Hello: ', username, password);
   try {
     const docRef = await addDoc(collection(db, 'users'), {
@@ -90,9 +112,12 @@ exports.getUserFromDB = async () => {
   querySnapshot.forEach((doc) => {
     // console.log(`${doc.id} => ${doc.get('user.body.name')}`);
     const user = {
-      token: doc.get('token'),
       username: doc.get('username'),
       password: doc.get('password'),
+      refresh_token: doc.get('refresh_token'),
+      access_token: doc.get('access_token'),
+      expires_in: doc.get('expires_in'),
+      userId: doc.get('userId'),
     };
 
     users.push(user);

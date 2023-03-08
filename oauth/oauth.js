@@ -1,7 +1,7 @@
 require('dotenv').config();
 const request = require('request-promise-native');
 const NodeCache = require('node-cache');
-const { persistToken, getTokenIfExist, addUserToBD } = require('../firebase/firebase');
+const { addUserToBD } = require('../firebase/firebase');
 
 let refreshTokenStore = {};
 const accessTokenCache = new NodeCache({ deleteOnExpire: true });
@@ -34,6 +34,7 @@ exports.exchangeForTokens = async (userId, exchangeProof, user) => {
     });
     // Usually, this token data should be persisted in a database and associated with
     // a user identity.
+    console.log('User ID: ', userId);
     const tokens = JSON.parse(responseBody);
     refreshTokenStore[userId] = tokens.refresh_token;
     accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));
@@ -53,9 +54,13 @@ exports.exchangeForTokens = async (userId, exchangeProof, user) => {
       refreshTokenStore[userId]
     );
     if (user?.username && user?.password && user?.email) {
-      addUserToBD(user, refreshTokenStore[userId]);
+      addUserToBD(
+        user,
+        tokens.refresh_token,
+        tokens.access_token,
+        Math.round(tokens.expires_in * 0.75)
+      );
     }
-
     return tokens.access_token;
   } catch (e) {
     console.error(`       > Error exchanging ${exchangeProof.grant_type} for access token`);
@@ -70,9 +75,8 @@ const refreshAccessToken = async (userId, user, refreshToken) => {
       client_id: CLIENT_ID,
       client_secret: CLIENT_SECRET,
       redirect_uri: REDIRECT_URI,
-      refresh_token: refreshTokenStore[userId] || refreshToken,
+      refresh_token: refreshToken,
     };
-
     return await this.exchangeForTokens(userId, refreshTokenProof, user);
   } catch (e) {
     console.log('Error happened on refreshAccessToken function');
@@ -89,17 +93,14 @@ exports.getAccessToken = async (userId, user, refreshToken) => {
       await refreshAccessToken(userId, user, refreshToken);
     }
     return accessTokenCache.get(userId);
+    // return refreshTokenStore[userId] || refreshToken;
   } catch (e) {
     console.log('Error happened on getAccessToken function');
   }
 };
 
-exports.isAuthorized = async (refreshToken) => {
-  try {
-    console.log('isAuthorized refreshToken : ', refreshToken);
-    // return refreshTokenStore[userId] ? true : false;
-    return refreshToken ? true : false;
-  } catch (e) {
-    console.log('Error happened on isAuthorized function');
-  }
+exports.isAuthorized = (refreshToken) => {
+  console.log('isAuthorized refreshToken: ', refreshToken);
+  // return refreshTokenStore[userId] ? true : false;
+  return refreshToken ? true : false;
 };

@@ -63,7 +63,7 @@ exports.install = (req, res) => {
 // Step 3
 // Receive the authorization code from the OAuth 2.0 Server,
 // and process it based on the query parameters that are passed
-exports.oAuthCallback = async (req, res) => {
+exports.oAuthCallbackFunction = async (req, res, registerData) => {
   try {
     console.log('===> Step 3: Handling the request sent by the server');
 

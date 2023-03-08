@@ -3,9 +3,11 @@ const { validationResult } = require('express-validator');
 const { resContacts } = require('../api-queries/huspots-queries');
 const { getUserFromDB } = require('../firebase/firebase');
 const { isAuthorized, getAccessToken } = require('../oauth/oauth');
+const { exchangeForTokens } = require('../oauth/oauth');
+const { oAuthCallbackFunction } = require('./hubspot');
 
 let hubspotClient;
-exports.registerData;
+let registerData;
 let loggedInData;
 let userLoggedIn = false;
 
@@ -45,11 +47,12 @@ exports.register = (req, res) => {
     if (username && email && password) {
       console.log(username, password, email);
       //Set new registered user information
-      this.registerData = {
+      registerData = {
         username,
         password,
         email,
       };
+      console.log('Register Data: ', registerData);
       // TODO: save user data to database or perform other actions
       res.write(`<a href="/install"><h3>Install the app</h3></a>`);
       // res.redirect('/');
@@ -116,15 +119,11 @@ exports.hubspotActions = async (req, res) => {
     const authorized = await isAuthorized(loggedInData.token);
     res.setHeader('Content-Type', 'text/html');
     res.write(`<h2>SMS Automation</h2>`);
-    console.log('Other hello: ', this.registerData);
+    console.log('Other hello: ', registerData);
     console.log('Logged In Data: ', loggedInData);
     console.log(authorized);
     if (authorized) {
-      const accessToken = await getAccessToken(
-        req.sessionID,
-        this.registerData,
-        loggedInData?.token
-      );
+      const accessToken = await getAccessToken(req.sessionID, registerData, loggedInData?.token);
       hubspotClient = new hubspot.Client({ accessToken: `${accessToken}` });
       const contact = await resContacts(accessToken);
       displayContactName(res, contact);
@@ -151,4 +150,10 @@ exports.hubspotActions = async (req, res) => {
     </html>
     `);
   }
+};
+
+// ============= HubSpot Connection =========== //
+
+exports.oAuthCallback = (req, res) => {
+  oAuthCallbackFunction(req, res, registerData);
 };

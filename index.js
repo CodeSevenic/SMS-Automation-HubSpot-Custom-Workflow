@@ -7,8 +7,14 @@ const cors = require('cors');
 
 const port = process.env.PORT || 8000;
 const { main } = require('./twilio/twilio');
-const { register, attemptLogin, hubspotActions, logout } = require('./controllers/auth');
-const { install, oauthCallback, oAuthCallback } = require('./controllers/hubspot');
+const {
+  register,
+  attemptLogin,
+  hubspotActions,
+  logout,
+  oAuthCallback,
+} = require('./controllers/auth');
+const { install } = require('./controllers/hubspot');
 
 // app.use(express.json());
 app.use(express.json({ limit: '10kb' }));

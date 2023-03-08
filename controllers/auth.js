@@ -8,26 +8,6 @@ let registerData;
 let loggedInData;
 let userLoggedIn = false;
 
-const hubSpotAuth = async (req, res) => {
-  const authorized = await isAuthorized(loggedInData.token);
-  res.setHeader('Content-Type', 'text/html');
-  res.write(`<h2>SMS Automation</h2>`);
-  console.log('Other hello: ', registerData);
-  console.log('Logged In Data: ', loggedInData);
-  console.log(authorized);
-  if (authorized) {
-    const accessToken = await getAccessToken(req.sessionID, registerData, loggedInData.token);
-    hubspotClient = new hubspot.Client({ accessToken: `${accessToken}` });
-    const contact = await resContacts(accessToken);
-    displayContactName(res, contact);
-    // recentUpdatedProperties(accessToken);
-    // createCustomWorkflow();
-    // getAllCustomActions();
-  } else {
-    res.write(`<a href="/install"><h3>Install the app</h3></a>`);
-  }
-};
-
 exports.register = (req, res) => {
   if (req.method === 'GET') {
     // Render registration form
@@ -70,7 +50,6 @@ exports.register = (req, res) => {
         email,
       };
       // TODO: save user data to database or perform other actions
-      hubSpotAuth(req, res);
       res.redirect('/');
     } else {
       res.status(400).send('Missing required fields');
@@ -132,7 +111,23 @@ const displayContactName = (res, contact) => {
 
 exports.hubspotActions = async (req, res) => {
   if (userLoggedIn) {
-    hubSpotAuth(req, res);
+    let authorized = await isAuthorized(loggedInData.token);
+    res.setHeader('Content-Type', 'text/html');
+    res.write(`<h2>SMS Automation</h2>`);
+    console.log('Other hello: ', registerData);
+    console.log('Logged In Data: ', loggedInData);
+    console.log(authorized);
+    if (authorized) {
+      const accessToken = await getAccessToken(req.sessionID, registerData, loggedInData.token);
+      hubspotClient = new hubspot.Client({ accessToken: `${accessToken}` });
+      const contact = await resContacts(accessToken);
+      displayContactName(res, contact);
+      // recentUpdatedProperties(accessToken);
+      // createCustomWorkflow();
+      // getAllCustomActions();
+    } else {
+      res.write(`<a href="/install"><h3>Install the app</h3></a>`);
+    }
     res.end();
   } else {
     res.send(/*template*/ `

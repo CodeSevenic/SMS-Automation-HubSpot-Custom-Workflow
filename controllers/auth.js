@@ -139,6 +139,7 @@ exports.hubspotActions = async (req, res) => {
           <label for="password">Password:</label>
           <input type="password" id="password" name="password"><br>
           <button type="submit">Login</button>
+          <a href="/register">Register</a>
         </form>
       </body>
     </html>

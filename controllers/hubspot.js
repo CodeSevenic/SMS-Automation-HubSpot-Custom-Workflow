@@ -1,4 +1,5 @@
 ﻿const { exchangeForTokens } = require('../oauth/oauth');
+const { registerData } = require('./auth');
 
 require('dotenv').config();
 if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
@@ -84,7 +85,7 @@ exports.oAuthCallback = async (req, res) => {
       console.log(
         '===> Step 4: Exchanging authorization code for an access token and refresh token'
       );
-      const token = await exchangeForTokens(req.sessionID, authCodeProof);
+      const token = await exchangeForTokens(req.sessionID, authCodeProof, registerData);
       if (token.message) {
         return res.redirect(`/error?msg=${token.message}`);
       }

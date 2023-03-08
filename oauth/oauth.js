@@ -42,6 +42,16 @@ exports.exchangeForTokens = async (userId, exchangeProof, user) => {
     // persistToken(refreshTokenStore[userId]);
 
     // store user with token to database
+    console.log(
+      'Incoming register details: ',
+      user?.username,
+      'Password ',
+      user?.password,
+      'Email ',
+      user?.email,
+      'Token ',
+      refreshTokenStore[userId]
+    );
     if (user?.username && user?.password && user?.email) {
       addUserToBD(user, refreshTokenStore[userId]);
     }

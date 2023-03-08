@@ -111,14 +111,14 @@ const displayContactName = (res, contact) => {
 
 exports.hubspotActions = async (req, res) => {
   if (userLoggedIn) {
-    let authorized = await isAuthorized(loggedInData.token);
+    const authorized = await isAuthorized(loggedInData.token);
     res.setHeader('Content-Type', 'text/html');
     res.write(`<h2>SMS Automation</h2>`);
     console.log('Other hello: ', registerData);
     console.log('Logged In Data: ', loggedInData);
     console.log(authorized);
     if (authorized) {
-      const accessToken = await getAccessToken(req.sessionID, registerData, loggedInData.token);
+      const accessToken = await getAccessToken(req.sessionID, registerData, loggedInData?.token);
       hubspotClient = new hubspot.Client({ accessToken: `${accessToken}` });
       const contact = await resContacts(accessToken);
       displayContactName(res, contact);

@@ -70,7 +70,7 @@ const getDbData = async () => {
 };
 getDbData();
 
-exports.retrieveUserFromDB = (input) => {
+exports.retrieveLogInUser = (input) => {
   const matches = dbData.filter(
     (user) => user.username === input.username && user.password === input.password
   );
@@ -78,7 +78,7 @@ exports.retrieveUserFromDB = (input) => {
 };
 
 exports.attemptLogin = async (req, res) => {
-  const user = await this.retrieveUserFromDB(req.body);
+  const user = await this.retrieveLogInUser(req.body);
   console.log(user);
   let username = req.body.username;
   let password = req.body.password;

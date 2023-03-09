@@ -9,6 +9,7 @@ const {
   where,
   query,
   addDoc,
+  updateDoc,
 } = require('firebase/firestore/lite');
 
 // =========== CODE TO STORE THE USER ACCESS IN FIREBASE ========== //

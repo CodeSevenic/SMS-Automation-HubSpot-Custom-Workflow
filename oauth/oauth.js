@@ -36,7 +36,7 @@ exports.exchangeForTokens = async (userId, exchangeProof, user) => {
     // a user identity.
     console.log('User ID: ', userId);
     const tokens = JSON.parse(responseBody);
-    refreshTokenStore[userId] = tokens.refresh_token;
+    // refreshTokenStore[userId] = tokens.refresh_token;
     accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));
 
     console.log('       > Received an access token and refresh token');
@@ -50,7 +50,7 @@ exports.exchangeForTokens = async (userId, exchangeProof, user) => {
       'Email ',
       user?.email,
       'Token ',
-      refreshTokenStore[userId]
+      tokens.refresh_token
     );
     if (user?.username && user?.password && user?.email) {
       addUserToBD(
@@ -92,7 +92,6 @@ exports.getAccessToken = async (userId, user, refreshToken) => {
     }
     console.log('Access User ID: ', userId);
     return accessTokenCache.get(userId);
-    // return refreshTokenStore[userId] || refreshToken;
   } catch (e) {
     console.log('Error happened on getAccessToken function');
   }

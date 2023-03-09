@@ -107,11 +107,9 @@ exports.updateUserId = async (userId, refresh_token, username, password) => {
   const updateUser = doc(db, 'users', `${doc_id}`);
 
   await updateDoc(updateUser, {
-    'user.body.username': username,
-    'user.body.password': password === '' ? '1234567890' : password,
+    userId: userId,
   }).then((res) => {
     // Get recently updated DB
-    const dataUpdated = this.getUserFromDB();
-    getData(dataUpdated);
+    this.getUserFromDB();
   });
 };

@@ -124,7 +124,6 @@ exports.hubspotActions = async (req, res) => {
     console.log('Logged In Data: ', loggedInData);
     console.log(authorized);
     if (authorized) {
-      console.log('OH this happened!!!');
       const accessToken = await getAccessToken(
         req.sessionID,
         registerData,

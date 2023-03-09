@@ -86,3 +86,32 @@ exports.getUserFromDB = async () => {
   console.log(users);
   return users;
 };
+
+exports.updateUserId = async (userId, name, username, password) => {
+  const q = query(
+    collection(db, 'users'),
+    where('username', '==', username),
+    where('password', '==', password),
+    where('password', '==', password)
+  );
+  const querySnapshot = await getDocs(q);
+
+  let doc_id;
+
+  querySnapshot.forEach((doc) => {
+    doc_id = doc.id;
+  });
+
+  console.log('Dog ID: ', doc_id);
+
+  const updateUser = doc(db, 'users', `${doc_id}`);
+
+  await updateDoc(updateUser, {
+    'user.body.username': username,
+    'user.body.password': password === '' ? '1234567890' : password,
+  }).then((res) => {
+    // Get recently updated DB
+    const dataUpdated = this.getUserFromDB();
+    getData(dataUpdated);
+  });
+};

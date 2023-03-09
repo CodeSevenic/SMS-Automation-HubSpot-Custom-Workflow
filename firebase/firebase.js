@@ -4,8 +4,6 @@ const {
   collection,
   getDocs,
   doc,
-  getDoc,
-  setDoc,
   where,
   query,
   addDoc,
@@ -86,6 +84,30 @@ exports.getUserFromDB = async () => {
 
   console.log(users);
   return users;
+};
+
+exports.getSpecificUser = async (username, password) => {
+  try {
+    const querySnapshot = await getDocs(
+      query(
+        collection(db, 'users'),
+        where('username', '==', username),
+        where('password', '==', password)
+      )
+    );
+    const users = querySnapshot.docs.map((doc) => ({
+      username: doc.get('username'),
+      password: doc.get('password'),
+      refresh_token: doc.get('refresh_token'),
+      access_token: doc.get('access_token'),
+      expires_in: doc.get('expires_in'),
+      userId: doc.get('userId'),
+    }));
+    return users;
+  } catch (error) {
+    console.error('Error getting user:', error);
+    return null;
+  }
 };
 
 exports.updateUserAccessDetails = async (username, password, userId, access_token, expires_in) => {

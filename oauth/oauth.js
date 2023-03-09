@@ -1,7 +1,12 @@
 require('dotenv').config();
 const request = require('request-promise-native');
 const NodeCache = require('node-cache');
-const { addUserToBD, updateUserAccessDetails } = require('../firebase/firebase');
+const {
+  addUserToBD,
+  updateUserAccessDetails,
+  getUserFromDB,
+  getSpecificUser,
+} = require('../firebase/firebase');
 
 let refreshTokenStore = {};
 const accessTokenCache = new NodeCache({ deleteOnExpire: true });
@@ -27,7 +32,7 @@ const REDIRECT_URI = `http://localhost:${port}/oauth-callback`;
 //   Exchanging Proof for an Access Token   //
 //==========================================//
 
-exports.exchangeForTokens = async (userId, exchangeProof, registerData, loggedInData) => {
+exports.exchangeForTokens = async (userId, exchangeProof, registerData, loggedInData = {}) => {
   try {
     const responseBody = await request.post('https://api.hubapi.com/oauth/v1/token', {
       form: exchangeProof,
@@ -53,15 +58,19 @@ exports.exchangeForTokens = async (userId, exchangeProof, registerData, loggedIn
       );
     }
 
-    // Update user accessToken details
-    updateUserAccessDetails(
-      loggedInData.username,
-      loggedInData.password,
-      userId,
-      tokens.access_token,
-      Math.round(tokens.expires_in * 0.75)
-    );
+    const loggedInUsername = loggedInData?.username;
+    const loggedInPassword = loggedInData?.password;
 
+    // Update user accessToken details
+    if (loggedInUsername && loggedInPassword) {
+      updateUserAccessDetails(
+        loggedInUsername,
+        loggedInPassword,
+        userId,
+        tokens.access_token,
+        Math.round(tokens.expires_in * 0.75)
+      );
+    }
     return tokens.access_token;
   } catch (e) {
     console.error(`       > Error exchanging ${exchangeProof.grant_type} for access token`);
@@ -86,15 +95,16 @@ const refreshAccessToken = async (userId, registerData, refreshToken, loggedInDa
 
 exports.getAccessToken = async (userId, registerData, refreshToken, loggedInData) => {
   try {
+    let user = await getSpecificUser(loggedInData.username, loggedInData.password);
     // If the access token has expired, retrieve
     // a new one using the refresh token
     if (!accessTokenCache.get(userId)) {
       console.log('Refreshing expired access token');
       await refreshAccessToken(userId, registerData, refreshToken, loggedInData);
     }
-    console.log('Access User ID: ', userId);
-    console.log('AND TIS User ID: ', accessTokenCache.get(userId));
-    return accessTokenCache.get(userId);
+
+    // console.log('USER FROM DB: ', user[0].access_token);
+    return user[0].access_token || accessTokenCache.get(userId);
   } catch (e) {
     console.log('Error happened on getAccessToken function');
   }

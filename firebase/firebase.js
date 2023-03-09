@@ -88,7 +88,7 @@ exports.getUserFromDB = async () => {
   return users;
 };
 
-exports.updateUserAccessDetails = async (username, password, userId, refresh_token, expires_in) => {
+exports.updateUserAccessDetails = async (username, password, userId, access_token, expires_in) => {
   const q = query(
     collection(db, 'users'),
     where('username', '==', username),
@@ -108,7 +108,7 @@ exports.updateUserAccessDetails = async (username, password, userId, refresh_tok
 
   await updateDoc(updateUser, {
     userId: userId,
-    refresh_token: refresh_token,
+    access_token: access_token,
     expires_in: expires_in,
   }).then((res) => {
     // Get recently updated DB

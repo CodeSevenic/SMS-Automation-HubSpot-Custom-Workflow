@@ -1,7 +1,7 @@
 require('dotenv').config();
 const request = require('request-promise-native');
 const NodeCache = require('node-cache');
-const { addUserToBD, getUserFromDB } = require('../firebase/firebase');
+const { addUserToBD, updateUserAccessDetails } = require('../firebase/firebase');
 
 let refreshTokenStore = {};
 const accessTokenCache = new NodeCache({ deleteOnExpire: true });
@@ -52,6 +52,15 @@ exports.exchangeForTokens = async (userId, exchangeProof, registerData, loggedIn
         Math.round(tokens.expires_in * 0.75)
       );
     }
+
+    // Update user accessToken details
+    updateUserAccessDetails(
+      loggedInData.username,
+      loggedInData.password,
+      userId,
+      tokens.access_token,
+      Math.round(tokens.expires_in * 0.75)
+    );
 
     return tokens.access_token;
   } catch (e) {

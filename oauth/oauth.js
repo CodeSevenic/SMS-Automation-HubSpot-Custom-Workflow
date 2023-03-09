@@ -6,13 +6,6 @@ const { addUserToBD, getUserFromDB } = require('../firebase/firebase');
 let refreshTokenStore = {};
 const accessTokenCache = new NodeCache({ deleteOnExpire: true });
 
-let dbData = [];
-
-const getDbData = async () => {
-  dbData = await getUserFromDB();
-};
-getDbData();
-
 const port = process.env.PORT || 8000;
 
 //===========================================================================//
@@ -34,7 +27,7 @@ const REDIRECT_URI = `http://localhost:${port}/oauth-callback`;
 //   Exchanging Proof for an Access Token   //
 //==========================================//
 
-exports.exchangeForTokens = async (userId, exchangeProof, user) => {
+exports.exchangeForTokens = async (userId, exchangeProof, registerData, loggedInData) => {
   try {
     const responseBody = await request.post('https://api.hubapi.com/oauth/v1/token', {
       form: exchangeProof,
@@ -42,6 +35,8 @@ exports.exchangeForTokens = async (userId, exchangeProof, user) => {
     // Usually, this token data should be persisted in a database and associated with
     // a user identity.
     console.log('User ID: ', userId);
+    console.log('Logged In: ', loggedInData);
+
     const tokens = JSON.parse(responseBody);
     // refreshTokenStore[userId] = tokens.refresh_token;
     accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));
@@ -49,24 +44,15 @@ exports.exchangeForTokens = async (userId, exchangeProof, user) => {
     console.log('       > Received an access token and refresh token');
 
     // store user with token to database
-    console.log(
-      'Incoming register details: ',
-      user?.username,
-      'Password ',
-      user?.password,
-      'Email ',
-      user?.email,
-      'Token ',
-      tokens.refresh_token
-    );
-    if (user?.username && user?.password && user?.email) {
+    if (registerData?.username && registerData?.password && registerData?.email) {
       addUserToBD(
-        user,
+        registerData,
         tokens.refresh_token,
         tokens.access_token,
         Math.round(tokens.expires_in * 0.75)
       );
     }
+
     return tokens.access_token;
   } catch (e) {
     console.error(`       > Error exchanging ${exchangeProof.grant_type} for access token`);
@@ -74,7 +60,7 @@ exports.exchangeForTokens = async (userId, exchangeProof, user) => {
   }
 };
 
-const refreshAccessToken = async (userId, user, refreshToken) => {
+const refreshAccessToken = async (userId, registerData, refreshToken, loggedInData) => {
   try {
     const refreshTokenProof = {
       grant_type: 'refresh_token',
@@ -83,21 +69,22 @@ const refreshAccessToken = async (userId, user, refreshToken) => {
       redirect_uri: REDIRECT_URI,
       refresh_token: refreshToken,
     };
-    return await this.exchangeForTokens(userId, refreshTokenProof, user);
+    return await this.exchangeForTokens(userId, refreshTokenProof, registerData, loggedInData);
   } catch (e) {
     console.log('Error happened on refreshAccessToken function');
   }
 };
 
-exports.getAccessToken = async (userId, user, refreshToken) => {
+exports.getAccessToken = async (userId, registerData, refreshToken, loggedInData) => {
   try {
     // If the access token has expired, retrieve
     // a new one using the refresh token
     if (!accessTokenCache.get(userId)) {
       console.log('Refreshing expired access token');
-      await refreshAccessToken(userId, user, refreshToken);
+      await refreshAccessToken(userId, registerData, refreshToken, loggedInData);
     }
     console.log('Access User ID: ', userId);
+    console.log('AND TIS User ID: ', accessTokenCache.get(userId));
     return accessTokenCache.get(userId);
   } catch (e) {
     console.log('Error happened on getAccessToken function');

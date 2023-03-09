@@ -89,9 +89,6 @@ exports.attemptLogin = async (req, res) => {
     console.log('User details match registered user 🙂😎');
     userLoggedIn = true;
     loggedInData = user;
-    if (user.userId === 'none') {
-      updateUserId(req.sessionID, user.refresh_token, user.username, user.password);
-    }
     res.redirect('/');
   } else {
     console.log('User details not registered!');
@@ -132,7 +129,8 @@ exports.hubspotActions = async (req, res) => {
       const accessToken = await getAccessToken(
         req.sessionID,
         registerData,
-        loggedInData?.refresh_token
+        loggedInData?.refresh_token,
+        loggedInData
       );
       hubspotClient = new hubspot.Client({ accessToken: `${accessToken}` });
       const contact = await resContacts(accessToken);

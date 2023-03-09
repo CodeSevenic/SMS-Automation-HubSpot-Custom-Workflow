@@ -40,7 +40,6 @@ exports.exchangeForTokens = async (userId, exchangeProof, user) => {
     accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));
 
     console.log('       > Received an access token and refresh token');
-    // persistToken(refreshTokenStore[userId]);
 
     // store user with token to database
     console.log(

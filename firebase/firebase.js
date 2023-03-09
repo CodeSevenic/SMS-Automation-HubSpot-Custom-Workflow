@@ -47,31 +47,6 @@ exports.addUserToBD = async (
     console.error('Error adding document: ', e);
   }
 };
-// Store user to database
-exports.addUserToBD2 = async ({ username, password }, token) => {
-  console.log('Hello: ', username, password);
-  try {
-    const docRef = await addDoc(collection(db, 'users'), {
-      username,
-      password,
-      token,
-    });
-    console.log('Document written with ID: ', docRef.id);
-  } catch (e) {
-    console.error('Error adding document: ', e);
-  }
-};
-
-// Store refreshToken
-exports.persistToken = async (token) => {
-  try {
-    await setDoc(doc(db, 'users', 'tokens'), {
-      token,
-    });
-  } catch (e) {
-    console.log(e);
-  }
-};
 
 // if user exist return
 exports.userExist = async () => {
@@ -88,21 +63,6 @@ exports.userExist = async () => {
   if (isExist) {
     return;
   }
-};
-
-// Fetch Refresh Token if exist in FireStore
-exports.getTokenIfExist = async () => {
-  let refreshToken;
-  const docRef = doc(db, 'users', 'tokens');
-  const docSnap = await getDoc(docRef);
-
-  if (docSnap.exists()) {
-    const obj = docSnap.data();
-    refreshToken = obj.token;
-  } else {
-    console.log('No such document!');
-  }
-  return refreshToken;
 };
 
 // get users from DB

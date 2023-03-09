@@ -85,13 +85,13 @@ const refreshAccessToken = async (userId, user, refreshToken) => {
 
 exports.getAccessToken = async (userId, user, refreshToken) => {
   try {
-    console.log('Does it get here? ', user);
     // If the access token has expired, retrieve
     // a new one using the refresh token
     if (!accessTokenCache.get(userId)) {
       console.log('Refreshing expired access token');
       await refreshAccessToken(userId, user, refreshToken);
     }
+    console.log('Access User ID: ', userId);
     return accessTokenCache.get(userId);
     // return refreshTokenStore[userId] || refreshToken;
   } catch (e) {

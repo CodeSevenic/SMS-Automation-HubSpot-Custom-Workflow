@@ -1,7 +1,7 @@
 ﻿const hubspot = require('@hubspot/api-client');
 const { validationResult } = require('express-validator');
 const { resContacts } = require('../api-queries/huspots-queries');
-const { getUserFromDB } = require('../firebase/firebase');
+const { getUserFromDB, updateUserId } = require('../firebase/firebase');
 const { isAuthorized, getAccessToken } = require('../oauth/oauth');
 const { oAuthCallbackFunction } = require('./hubspot');
 
@@ -79,7 +79,9 @@ exports.retrieveLogInUser = (input) => {
 
 exports.attemptLogin = async (req, res) => {
   const user = await this.retrieveLogInUser(req.body);
+  console.log('Session ID: ', req.sessionID);
   console.log(user);
+
   let username = req.body.username;
   let password = req.body.password;
 
@@ -87,6 +89,9 @@ exports.attemptLogin = async (req, res) => {
     console.log('User details match registered user 🙂😎');
     userLoggedIn = true;
     loggedInData = user;
+    if (user.userId === 'none') {
+      updateUserId(req.sessionID, user.refresh_token, user.username, user.password);
+    }
     res.redirect('/');
   } else {
     console.log('User details not registered!');

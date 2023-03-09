@@ -1,10 +1,17 @@
 require('dotenv').config();
 const request = require('request-promise-native');
 const NodeCache = require('node-cache');
-const { addUserToBD } = require('../firebase/firebase');
+const { addUserToBD, getUserFromDB } = require('../firebase/firebase');
 
 let refreshTokenStore = {};
 const accessTokenCache = new NodeCache({ deleteOnExpire: true });
+
+let dbData = [];
+
+const getDbData = async () => {
+  dbData = await getUserFromDB();
+};
+getDbData();
 
 const port = process.env.PORT || 8000;
 

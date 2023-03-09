@@ -87,12 +87,12 @@ exports.getUserFromDB = async () => {
   return users;
 };
 
-exports.updateUserId = async (userId, name, username, password) => {
+exports.updateUserId = async (userId, refresh_token, username, password) => {
   const q = query(
     collection(db, 'users'),
     where('username', '==', username),
     where('password', '==', password),
-    where('password', '==', password)
+    where('refresh_token', '==', refresh_token)
   );
   const querySnapshot = await getDocs(q);
 

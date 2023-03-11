@@ -36,7 +36,7 @@ exports.register = (req, res) => {
     `);
   } else if (req.method === 'POST') {
     // Check for validation errors
-    const errors = validationResult(req);
+    // const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }

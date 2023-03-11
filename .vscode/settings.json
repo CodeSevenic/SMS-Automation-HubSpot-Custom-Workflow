@@ -1,0 +1,24 @@
+{
+  "C_Cpp.default.includePath": [
+    "${workspaceFolder}/**",
+    "${workspaceFolder}/Include",
+    "c:\\Users\\Sibusiso\\AppData\\Roaming\\MetaQuotes\\Terminal\\D0E8209F77C8CF37AD8BF550E51FF075\\MQL5\\Include"
+  ],
+  "C_Cpp.default.compilerPath": "",
+  "C_Cpp.default.intelliSenseMode": "gcc-x64",
+  "C_Cpp.errorSquiggles": "disabled",
+  "C_Cpp.autocompleteAddParentheses": true,
+  "mql_tools.context": true,
+  "files.exclude": {
+    "**/*.ex4": true,
+    "**/*.ex5": true
+  },
+  "files.associations": {
+    "*.mqh": "cpp",
+    "*.mq4": "cpp",
+    "*.mq5": "cpp"
+  },
+  "C_Cpp.default.forcedInclude": [
+    "c:\\Users\\Sibusiso\\.vscode\\extensions\\l-i-v.mql-tools-2.0.0\\data\\mql5_en.mqh"
+  ]
+}

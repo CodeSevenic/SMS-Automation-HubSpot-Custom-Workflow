@@ -39,8 +39,6 @@ exports.exchangeForTokens = async (userId, exchangeProof, registerData, loggedIn
     });
     // Usually, this token data should be persisted in a database and associated with
     // a user identity.
-    console.log('User ID: ', userId);
-    console.log('Logged In: ', loggedInData);
 
     const tokens = JSON.parse(responseBody);
     // refreshTokenStore[userId] = tokens.refresh_token;
@@ -98,13 +96,13 @@ exports.getAccessToken = async (userId, registerData, refreshToken, loggedInData
     let user = await getSpecificUser(loggedInData.username, loggedInData.password);
     // If the access token has expired, retrieve
     // a new one using the refresh token
-    if (!accessTokenCache.get(userId)) {
+    if (user[0].access_token) {
       console.log('Refreshing expired access token');
       await refreshAccessToken(userId, registerData, refreshToken, loggedInData);
     }
 
-    // console.log('USER FROM DB: ', user[0].access_token);
-    return user[0].access_token || accessTokenCache.get(userId);
+    console.log('EXCESS TOKEN: ', user[0].access_token, '+++++', accessTokenCache.get(userId));
+    return accessTokenCache.get(userId) || user[0].access_token;
   } catch (e) {
     console.log('Error happened on getAccessToken function');
   }

@@ -86,12 +86,41 @@ exports.attemptLogin = async (req, res) => {
   let password = req.body.password;
 
   if (username === user?.username && password === user?.password) {
+    console.log(req.body);
     console.log('User details match registered user 🙂😎');
     userLoggedIn = true;
     loggedInData = user;
-    res.redirect('/');
+
+    // If successful login
+    const authorized = isAuthorized(loggedInData.refresh_token);
+
+    if (authorized) {
+      const accessToken = await getAccessToken(
+        req.sessionID,
+        registerData,
+        loggedInData?.refresh_token,
+        loggedInData
+      );
+      const contacts = await resContacts(accessToken);
+      res.status(200).json({
+        message: 'LoggedIn Successfully',
+        contacts: contacts,
+        userLoggedIn: userLoggedIn,
+      });
+      // recentUpdatedProperties(accessToken);
+      // createCustomWorkflow();
+      // getAllCustomActions();
+    } else {
+      res.write(`<a href="/install"><h3>Install the app</h3></a>`);
+    }
+
+    // res.status(200).json({
+    //   message: 'LoggedIn Successfully',
+    // });
+    // res.redirect('/');
   } else {
     console.log('User details not registered!');
+    console.log('User: ', req.body);
     userLoggedIn = false;
     res.status(401).json({
       message: 'Invalid credentials',
@@ -104,60 +133,6 @@ exports.logout = (req, res) => {
   console.log('Try Logout');
   loggedInData = {};
   res.redirect('/');
-};
-
-const displayContactName = (res, contact) => {
-  res.write('<form method="POST" action="/logout">');
-  for (val of contact) {
-    res.write(`<p>Contact name: ${val.properties.firstname} ${val.properties.lastname}</p>`);
-  }
-  res.write('<button type="submit">Logout</button>');
-  res.write('</form>');
-};
-
-exports.hubspotActions = async (req, res) => {
-  if (userLoggedIn) {
-    console.log('Before SMS Automation');
-    const authorized = isAuthorized(loggedInData.refresh_token);
-
-    res.setHeader('Content-Type', 'text/html');
-    res.write(`<h2>SMS Automation</h2>`);
-    console.log('Other hello: ', registerData);
-    console.log('Logged In Data: ', loggedInData);
-    console.log(authorized);
-    if (authorized) {
-      const accessToken = await getAccessToken(
-        req.sessionID,
-        registerData,
-        loggedInData?.refresh_token,
-        loggedInData
-      );
-      hubspotClient = new hubspot.Client({ accessToken: `${accessToken}` });
-      const contact = await resContacts(accessToken);
-      displayContactName(res, contact);
-      // recentUpdatedProperties(accessToken);
-      // createCustomWorkflow();
-      // getAllCustomActions();
-    } else {
-      res.write(`<a href="/install"><h3>Install the app</h3></a>`);
-    }
-    res.end();
-  } else {
-    res.send(/*template*/ `
-    <html>
-      <body>
-        <form method="POST" action="/">
-          <label for="username">Username:</label>
-          <input type="text" id="username" name="username"><br>
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password"><br>
-          <button type="submit">Login</button>
-          <a href="/register">Register</a>
-        </form>
-      </body>
-    </html>
-    `);
-  }
 };
 
 // ============= HubSpot Connection =========== //

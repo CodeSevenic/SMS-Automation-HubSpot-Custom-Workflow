@@ -15,10 +15,25 @@ const {
   oAuthCallback,
 } = require('./controllers/auth');
 const { install } = require('./controllers/hubspot');
+const {
+  getCustomActions,
+  archiveActions,
+  updateAction,
+  updateSpecificAction,
+} = require('./controllers/hs-actions');
 
 // app.use(express.json());
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
+// Set CORS headers
+app.use(cors());
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
 
 // Use a session to keep track of client ID
 app.use(
@@ -54,9 +69,15 @@ app.post('/register', register);
 app.get('/register', register);
 
 //User Login logic
-app.get('/', hubspotActions);
-app.post('/', attemptLogin);
+// app.get('/', hubspotActions);
+app.post('/api/login', attemptLogin);
 app.post('/logout', logout);
+
+// HS Custom action
+app.post('/api/get-custom-actions', getCustomActions);
+app.post('/api/archive-actions', archiveActions);
+app.post('/api/update-action', updateAction);
+app.post('/api/update-one-action', updateSpecificAction);
 
 app.use(
   cors({
